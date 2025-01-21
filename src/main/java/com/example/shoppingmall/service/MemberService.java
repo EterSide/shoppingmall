@@ -5,6 +5,8 @@ import com.example.shoppingmall.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -20,6 +22,10 @@ public class MemberService {
         mem.setPhone(member.getPhone());
         mem.setAddress(member.getAddress());
         memberRepository.save(mem);
+    }
+
+    public Optional<Member> login(String id, String password) {
+        return memberRepository.findByUserIdAndPassword(id, password);
     }
 
 }
