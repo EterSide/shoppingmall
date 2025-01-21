@@ -19,13 +19,15 @@ public class MemberController {
 
     @GetMapping("/signup")
     public String signUp(Model model) {
-        return "signup";
+        model.addAttribute("content", "signup");
+        return "layout";
     }
 
     @PostMapping("/signup")
     public String signUp(Member member) {
+        System.out.println("asd");
         memberService.save(member);
-        return "redirect:/login";
+        return "index";
     }
 
 }
