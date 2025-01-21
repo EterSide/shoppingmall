@@ -1,6 +1,7 @@
 package com.example.shoppingmall.entitiy;
 
 import com.example.shoppingmall.entitiy.status.MemberStatus;
+import com.example.shoppingmall.entitiy.status.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,6 +38,9 @@ public class Member extends BaseTimeEntity {
 
     @Column(nullable = false)
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
 
     @Enumerated(EnumType.STRING)
     private MemberStatus status = MemberStatus.ACTIVE;

@@ -29,9 +29,9 @@ public class Product extends BaseTimeEntity{
 
     private int stock;
 
-    private int saleCount;
+    private int saleCount; // 상품의 판매량
 
-    private int viewCount;
+    private int viewCount; // 조회수
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status = ProductStatus.ACTIVE;

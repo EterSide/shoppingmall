@@ -3,17 +3,16 @@ package com.example.shoppingmall.entitiy;
 
 import com.example.shoppingmall.entitiy.status.OrderStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter @Setter
+@Table(name = "orders")
 public class Order extends BaseTimeEntity {
 
     @Id
@@ -27,7 +26,7 @@ public class Order extends BaseTimeEntity {
     private int totalAmount;
 
     @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.ORDER_RECEIVED;
+    private OrderStatus status = OrderStatus.ORDER_RECEIVED; // 배달 상황
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
