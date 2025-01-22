@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http//www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+    <style>
+        .center-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* 화면 높이를 꽉 채우도록 설정 */
+        }
+        .form-container {
+            width: 100%;
+            max-width: 400px; /* 폼의 최대 너비를 설정 */
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+            border-radius: 10px; /* 테두리 둥글게 */
+            background-color: #ffffff; /* 배경색 */
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="center-container">
+        <div class="form-container">
+            <h2 class="text-center">로그인</h2>
+            <form th:action="@{/user/login2}" method="post" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="userId" class="form-label">사용자 아이디</label>
+                    <input type="text" class="form-control" id="userId" name="userId" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">로그인</button>
+                <br>
+                <div th:if="${error}" class="alert alert-danger mt-3">
+                    <span th:text="${error}"></span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

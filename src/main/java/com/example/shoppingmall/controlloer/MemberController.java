@@ -39,6 +39,28 @@ public class MemberController {
         return "layout";
     }
 
+    @GetMapping("/login2")
+    public String logIn2(Model model) {
+        return "login2";
+    }
+
+    @PostMapping("/login2")
+    public String logIn2(@RequestParam String userId, @RequestParam String password, HttpSession session,Model model) {
+        Optional<Member> member = memberService.idCheck(userId);
+
+        if (member.isPresent()) {
+            if (member.get().getPassword().equals(password)) {
+                session.setAttribute("member", member.get());
+                return "index";
+            } else {
+                model.addAttribute("error", "패스워드가 틀립니다.");
+            }
+        } else {
+            model.addAttribute("error", "아이디가 틀립니다.");
+        }
+        return "login2";
+    }
+
     @PostMapping("/login")
     public String logIn(@RequestParam String userId, @RequestParam String password, HttpSession session,Model model) {
         Optional<Member> member = memberService.idCheck(userId);
