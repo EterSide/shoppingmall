@@ -14,3 +14,5 @@ public class Cart extends BaseTimeEntity{
     private String productId;
 
 }
+
+// (user_id_cart, [product_id,product_id,product_id...])
