@@ -41,17 +41,20 @@ public class MemberController {
 
     @PostMapping("/login")
     public String logIn(@RequestParam String userId, @RequestParam String password, HttpSession session,Model model) {
-        Optional<Member> member = memberService.login(userId, password);
+        Optional<Member> member = memberService.idCheck(userId);
+
         if (member.isPresent()) {
-            session.setAttribute("member", member.get());
-            return "index";
-        }else{
-            model.addAttribute("content", "login");
-            model.addAttribute("error", "아이디가 없거나 패스워드가 틀립니다.");
-            return "layout";
+            if (member.get().getPassword().equals(password)) {
+                session.setAttribute("member", member.get());
+                return "index";
+            } else {
+                model.addAttribute("error", "패스워드가 틀립니다.");
+            } 
+        } else {
+            model.addAttribute("error", "아이디가 틀립니다.");
         }
-
-
+        model.addAttribute("content", "login");
+        return "layout";
     }
 
 }

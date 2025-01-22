@@ -24,8 +24,12 @@ public class MemberService {
         memberRepository.save(mem);
     }
 
-    public Optional<Member> login(String id, String password) {
+    public Optional<Member> passwordCheck(String id, String password) {
         return memberRepository.findByUserIdAndPassword(id, password);
+    }
+
+    public Optional<Member> idCheck(String id) {
+        return memberRepository.findByUserId(id);
     }
 
 }
