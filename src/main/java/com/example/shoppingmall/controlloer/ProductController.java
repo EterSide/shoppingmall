@@ -1,10 +1,15 @@
 package com.example.shoppingmall.controlloer;
 
+import com.example.shoppingmall.entitiy.Category;
 import com.example.shoppingmall.entitiy.Product;
 import com.example.shoppingmall.entitiy.ProductImage;
+import com.example.shoppingmall.repository.CategoryRepository;
 import com.example.shoppingmall.repository.ProductImageRepository;
 import com.example.shoppingmall.repository.ProductRepository;
+import com.example.shoppingmall.service.CategoryService;
+import com.example.shoppingmall.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,21 +34,25 @@ import java.util.List;
 public class ProductController {
 
     private final ProductRepository productRepository;
+
     private final ProductImageRepository productImageRepository;
+    private final CategoryService categoryService;
+    private final ProductService productService;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     @GetMapping("/register")
-    public String registerProduct() {
+    public String registerProduct(Model model) {
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         return "register_product";
     }
 
     @PostMapping("/register")
     public String registerProduct(Product product, @RequestParam("files") MultipartFile[] files) throws IOException {
-
         int i = 0;
-        productRepository.save(product);
+        productService.save(product);
 
         for (MultipartFile file : files) {
             i = i + 1;

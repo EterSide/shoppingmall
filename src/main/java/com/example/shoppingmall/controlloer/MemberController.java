@@ -58,12 +58,7 @@ public class MemberController {
         if (member.isPresent()) {
             Member mem = member.get();
             if (mem.getPassword().equals(password)) {
-//                if(mem.getRole().equals(Role.USER)) session.setAttribute("member", mem);
-//                else if(mem.getRole().equals(Role.ADMIN)) session.setAttribute("admin", mem);
-
                 session.setAttribute("member", mem);
-
-                //System.out.println(session.getAttribute("member"));
                 return "redirect:/";
             } else {
                 model.addAttribute("error", "패스워드가 틀립니다.");
@@ -71,8 +66,6 @@ public class MemberController {
         } else {
             model.addAttribute("error", "아이디가 틀립니다.");
         }
-//        model.addAttribute("content", "login");
-//        return "layout";
 
         return "login";
     }
