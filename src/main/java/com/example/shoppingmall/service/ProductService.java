@@ -5,6 +5,8 @@ import com.example.shoppingmall.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -24,6 +26,10 @@ public class ProductService {
         pro.setViewCount(product.getViewCount());
 
         productRepository.save(pro);
+    }
+
+    public List<Product> findAll() {
+        return productRepository.findAll();
     }
 
 }
