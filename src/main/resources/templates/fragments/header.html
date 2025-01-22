@@ -26,16 +26,12 @@
                         <a class="nav-link" href="/product/products">상품</a>
                     </li>
 
-                    <li th:if="${session.member == null && session.admin == null}" class="nav-item">
+                    <li th:if="${session.member == null}" class="nav-item">
                         <a class="nav-link" href="/user/login"> 로그인 </a>
                     </li>
 
                     <li th:if="${session.member}" class="nav-item">
                         <a class="nav-link" href="/user/login" th:text="${session.member.getName()}"> </a>
-                    </li>
-
-                    <li th:if="${session.admin}" class="nav-item">
-                        <a class="nav-link" href="/user/login" th:text="${session.admin.getName()}"> </a>
                     </li>
 
                     <li th:if="${session.member}" class="nav-item dropdown">
@@ -44,22 +40,16 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">마이페이지</a></li>
+                            <li th:if="${session.member.getRole().toString().equals('ADMIN')}"><a class="dropdown-item" href="/product/register"> 상품 등록 </a></li>
                             <li><a class="dropdown-item" href="#">Another action</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
                     </li>
 
-                    <li th:if="${session.admin}" class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            마이페이지
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"> 마이페이지 </a></li>
-                            <li><a class="dropdown-item" href="/product/register"> 상품 등록 </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
+
+                    <li th:if="${session.member}" class="nav-item">
+                        <a class="nav-link" href="/user/logout"> 로그아웃 </a>
                     </li>
 
                     <li class="nav-item">

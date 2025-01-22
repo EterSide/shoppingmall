@@ -29,9 +29,17 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public String signUp(Member member) {
+    public String signUp(Member member, HttpSession session) {
         System.out.println("asd");
         memberService.save(member);
+        session.setAttribute("member", member);
+        return "redirect:/";
+    }
+
+    @GetMapping("/logout")
+    public String logOut(Model model,HttpSession session) {
+        session.removeAttribute("member");
+
         return "redirect:/";
     }
 
@@ -39,6 +47,7 @@ public class MemberController {
     public String logIn(Model model) {
 //        model.addAttribute("content", "login");
 //        return "layout";
+
         return "login";
     }
 
@@ -49,8 +58,12 @@ public class MemberController {
         if (member.isPresent()) {
             Member mem = member.get();
             if (mem.getPassword().equals(password)) {
-                if(mem.getRole().equals(Role.USER)) session.setAttribute("member", mem);
-                else if(mem.getRole().equals(Role.ADMIN)) session.setAttribute("admin", mem);
+//                if(mem.getRole().equals(Role.USER)) session.setAttribute("member", mem);
+//                else if(mem.getRole().equals(Role.ADMIN)) session.setAttribute("admin", mem);
+
+                session.setAttribute("member", mem);
+
+                //System.out.println(session.getAttribute("member"));
                 return "redirect:/";
             } else {
                 model.addAttribute("error", "패스워드가 틀립니다.");
