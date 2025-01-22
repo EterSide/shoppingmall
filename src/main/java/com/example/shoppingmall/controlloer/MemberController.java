@@ -32,7 +32,7 @@ public class MemberController {
     public String signUp(Member member) {
         System.out.println("asd");
         memberService.save(member);
-        return "index";
+        return "redirect:/";
     }
 
     @GetMapping("/login")
@@ -51,7 +51,7 @@ public class MemberController {
             if (mem.getPassword().equals(password)) {
                 if(mem.getRole().equals(Role.USER)) session.setAttribute("member", mem);
                 else if(mem.getRole().equals(Role.ADMIN)) session.setAttribute("admin", mem);
-                return "index";
+                return "redirect:/";
             } else {
                 model.addAttribute("error", "패스워드가 틀립니다.");
             } 
@@ -61,7 +61,7 @@ public class MemberController {
 //        model.addAttribute("content", "login");
 //        return "layout";
 
-        return "index";
+        return "login";
     }
 
 }

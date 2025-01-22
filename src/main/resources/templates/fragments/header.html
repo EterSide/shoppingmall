@@ -26,7 +26,7 @@
                         <a class="nav-link" href="#">상품</a>
                     </li>
 
-                    <li th:if="${session.member == null}" class="nav-item">
+                    <li th:if="${session.member == null && session.admin == null}" class="nav-item">
                         <a class="nav-link" href="/user/login"> 로그인 </a>
                     </li>
 
@@ -56,7 +56,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#"> 마이페이지 </a></li>
-                            <li><a class="dropdown-item" href="#"> 상품 등록 </a></li>
+                            <li><a class="dropdown-item" href="/product/register"> 상품 등록 </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
