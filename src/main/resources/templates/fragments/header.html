@@ -42,9 +42,11 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                            <li th:if="${session.member.getRole().toString().equals('ADMIN')}"><a class="dropdown-item" href="/product/register"> 상품 등록 </a></li>
-                            <li th:if="${session.member.getRole().toString().equals('ADMIN')}"><a class="dropdown-item" href="/coupon/register"> 쿠폰 등록 </a></li>
-                            <li th:if="${session.member.getRole().toString().equals('ADMIN')}"><a class="dropdown-item" href="/category/register"> 카테고리 등록 </a></li>
+                            <th:block th:if="${session.member.getRole().toString().equals('ADMIN')}">
+                                <li><a class="dropdown-item" href="/product/register"> 상품 등록 </a></li>
+                                <li><a class="dropdown-item" href="/coupon/register"> 쿠폰 등록 </a></li>
+                                <li><a class="dropdown-item" href="/category/register"> 카테고리 등록 </a></li>
+                            </th:block>
                             <li><a class="dropdown-item" href="#">Another action</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#">Something else here</a></li>

@@ -22,9 +22,7 @@ public class CategoryController {
 
     @PostMapping("/register")
     public String registerCategory(Category category) {
-
         categoryService.save(category);
-
         return "redirect:/";
     }
 

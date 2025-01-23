@@ -23,7 +23,7 @@ public class Order extends BaseTimeEntity {
     private String orderNumber;
 
     @Column(nullable = false)
-    private int totalAmount;
+    private int totalAmount; // 할인등의 적용이 끝난 최종 결제가
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.ORDER_RECEIVED; // 배달 상황

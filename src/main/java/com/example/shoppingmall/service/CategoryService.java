@@ -18,6 +18,14 @@ public class CategoryService {
     }
 
     public Category save(Category category) {
+
+        List<Category> categories = categoryRepository.findAll();
+
+        for(Category cate : categories) {
+            if(cate.getName().equals(category.getName())) {
+                return null;
+            }
+        }
         return categoryRepository.save(category);
     }
 

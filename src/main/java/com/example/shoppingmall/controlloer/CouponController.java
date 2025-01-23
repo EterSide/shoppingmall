@@ -2,6 +2,7 @@ package com.example.shoppingmall.controlloer;
 
 import com.example.shoppingmall.entitiy.Coupon;
 import com.example.shoppingmall.service.CouponService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,8 @@ public class CouponController {
     private final CouponService couponService;
 
     @GetMapping("/list")
-    public String list(Model model) {
+    public String list(Model model, HttpSession session) {
+
         List<Coupon> coupons = couponService.findAll();
         model.addAttribute("coupons", coupons);
         return "coupon_list";
@@ -42,7 +44,6 @@ public class CouponController {
         cp.setQuantity(coupon.getQuantity());
         cp.setStartDate(coupon.getStartDate());
         cp.setEndDate(coupon.getEndDate());
-
 
         couponService.save(cp);
         return "redirect:/coupon/list";

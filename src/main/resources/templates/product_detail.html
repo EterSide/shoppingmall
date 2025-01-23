@@ -55,48 +55,51 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="center-container">
-    <div class="form-container">
-      <h2 class="text-center">상품</h2>
-      <div class="mb-3">
-        <label for="name" class="form-label">상품 명</label>
-        <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
-      </div>
-
-      <div class="mb-3">
-        <label for="price" class="form-label">가격</label>
-        <input type="number" class="form-control" id="price" name="price" th:value="${product.getPrice()}" disabled>
-      </div>
-
-      <div class="mb-3">
-        <label for="stock" class="form-label">재고량</label>
-        <input type="number" class="form-control" id="stock" name="stock" disabled th:value="${product.getStock()}">
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">업로드된 이미지</label>
-        <div class="preview-container" id="preview-container">
-          <!-- 업로드된 이미지를 반복 렌더링 -->
-          <img th:src="${image.imageUrl}"
-               th:each="image : ${images}"
-               alt="업로드된 이미지" />
+  <form th:action="@{/product/register}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    <div class="center-container">
+      <div class="form-container">
+        <h2 class="text-center">상품</h2>
+        <div class="mb-3">
+          <label for="name" class="form-label">상품 명</label>
+          <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
         </div>
-      </div>
-              <div class="mb-3">
-                <label for="category_id" class="form-label">카테고리</label>
-                <select class="form-control" id="category_id" name="category" disabled>
-                  <option th:text="${product.getCategory().getName()}" disabled selected>카테고리를 선택하세요</option>
-<!--                  <th:block th:each="category : ${categories}">-->
-<!--                    <option th:value="${category.id}" th:text="${category.name}"></option>-->
-<!--                  </th:block>-->
-                </select>
-              </div>
-      <div class="mb-3">
-        <label for="description" class="form-label">상세설명</label>
-        <input type="text" class="form-control" id="description" name="description" th:value="${product.getDescription()}" disabled>
+
+        <div class="mb-3">
+          <label for="price" class="form-label">가격</label>
+          <input type="number" class="form-control" id="price" name="price" th:value="${product.getPrice()}" disabled>
+        </div>
+
+        <div class="mb-3">
+          <label for="stock" class="form-label">재고량</label>
+          <input type="number" class="form-control" id="stock" name="stock" disabled th:value="${product.getStock()}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">상품 이미지</label>
+          <div class="preview-container" id="preview-container">
+            <!-- 업로드된 이미지를 반복 렌더링 -->
+            <img th:src="${image.imageUrl}"
+                 th:each="image : ${images}"
+                 alt="업로드된 이미지" />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="category_id" class="form-label">카테고리</label>
+          <select class="form-control" id="category_id" name="category" disabled>
+            <option th:text="${product.getCategory().getName()}" disabled selected>카테고리를 선택하세요</option>
+            <!--                  <th:block th:each="category : ${categories}">-->
+            <!--                    <option th:value="${category.id}" th:text="${category.name}"></option>-->
+            <!--                  </th:block>-->
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">상세설명</label>
+          <input type="text" class="form-control" id="description" name="description" th:value="${product.getDescription()}" disabled>
+        </div>
+        <button type="submit" class="btn btn-primary w-100"> 상품구매 </button>
       </div>
     </div>
-    </div>
+  </form>
   </div>
 </body>
 </html>
