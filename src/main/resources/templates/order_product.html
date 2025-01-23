@@ -13,7 +13,7 @@
 
     .form-container {
       width: 100%;
-      max-width: 400px; /* 폼의 최대 너비를 설정 */
+      max-width: 50%; /* 폼의 최대 너비를 설정 */
       padding: 20px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
       border-radius: 10px; /* 테두리 둥글게 */
@@ -23,34 +23,42 @@
     .preview-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 30px;
+      margin-top: 30px;
     }
 
     .preview-container img {
-      max-width: 100px;
-      max-height: 100px;
+      max-width: 25%;
+      max-height: 25%;
       object-fit: cover;
       border: 1px solid #ddd;
       border-radius: 5px;
     }
   </style>
   <script>
-    function loadFiles(input) {
-      const files = input.files;
-      const previewContainer = document.getElementById("preview-container");
-      previewContainer.innerHTML = ""; // 기존 미리보기 초기화
 
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      });
+    let price = parseInt(document.querySelector('.price').textContent);
+
+    function increasePrice(event) {
+      event.preventDefault();
+      let currentPrice = parseInt(document.querySelector('.price').textContent);
+      currentPrice += 1000;
+      document.querySelector('.price').textContent = currentPrice;
+      clicks = 0;
     }
+
+    function decreasePrice(event) {
+      clicks++;
+      event.preventDefault();
+      let currentPrice = parseInt(document.querySelector('.price').textContent);
+      currentPrice -= 1000;
+      if (currentPrice < 0) {
+        currentPrice = 0;
+      }
+      document.querySelector('.price').textContent = currentPrice;
+      clicks = 0;
+    }
+
   </script>
 </head>
 <body>
@@ -58,21 +66,7 @@
   <form th:action="@{/order/{id}(id=${product.id})}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
     <div class="center-container">
       <div class="form-container">
-        <h2 class="text-center">상품</h2>
-        <div class="mb-3">
-          <label for="name" class="form-label">상품 명</label>
-          <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
-        </div>
-
-        <div class="mb-3">
-          <label for="price" class="form-label">가격</label>
-          <input type="number" class="form-control" id="price" name="price" th:value="${product.getPrice()}" disabled>
-        </div>
-
-        <div class="mb-3">
-          <label for="stock" class="form-label">재고량</label>
-          <input type="number" class="form-control" id="stock" name="stock" disabled th:value="${product.getStock()}">
-        </div>
+        <h2 class="text-center">상품 구매</h2>
 
         <div class="mb-3">
           <label class="form-label">상품 이미지</label>
@@ -83,6 +77,23 @@
                  alt="업로드된 이미지" />
           </div>
         </div>
+
+        <div class="mb-3">
+          <label for="name" class="form-label">상품 명</label>
+          <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
+        </div>
+
+        <div class="mb-3">
+          <form>
+            <div class="price-container">
+              <label class="form-label"> 가격 </label>
+              <span class="price" th:value="${product.price}" th:text="${product.price}" id="price">10000</span>
+              <button class="btn-increase" onclick="increasePrice(event)">+</button>
+              <button class="btn-decrease" onclick="decreasePrice(event)">-</button>
+            </div>
+          </form>
+        </div>
+
         <div class="mb-3">
           <label for="category_id" class="form-label">카테고리</label>
           <select class="form-control" id="category_id" name="category" disabled>
