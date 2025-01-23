@@ -7,7 +7,9 @@ import com.example.shoppingmall.repository.CategoryRepository;
 import com.example.shoppingmall.repository.ProductImageRepository;
 import com.example.shoppingmall.repository.ProductRepository;
 import com.example.shoppingmall.service.CategoryService;
+import com.example.shoppingmall.service.ProductImageService;
 import com.example.shoppingmall.service.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +32,8 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    private final ProductRepository productRepository;
 
-    private final ProductImageRepository productImageRepository;
+    private final ProductImageService productImageService;
     private final CategoryService categoryService;
     private final ProductService productService;
 
@@ -48,38 +49,50 @@ public class ProductController {
 
     @PostMapping("/register")
     public String registerProduct(Product product, @RequestParam("files") MultipartFile[] files) throws IOException {
+        Product pro = productService.save(product);
         int i = 0;
-        productService.save(product);
-
         for (MultipartFile file : files) {
             i = i + 1;
             if (!file.isEmpty()) {
-                // 파일 저장 로직
-                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+                String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String fileNameWithoutExtension = StringUtils.stripFilenameExtension(originalFileName);
+                String fileExtension = StringUtils.getFilenameExtension(originalFileName);
                 String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
-                fileName = timestamp + fileName;
-                fileName = fileName.replaceAll("[:]", "_");
+                String newFileName = fileNameWithoutExtension + "_" + timestamp + "." + fileExtension;
+                Path filePath = Paths.get(uploadDir + newFileName);
+                Files.copy(file.getInputStream(), filePath);
+                String fileUrl = "/uploads/" + newFileName;
 
-                Path path = Paths.get(uploadDir + fileName);
-
-                Files.copy(file.getInputStream(), path);
                 ProductImage productImage = new ProductImage();
-                productImage.setProduct(product);
+                productImage.setProduct(pro);
                 productImage.setDisplayOrder(i);
-                productImage.setImageUrl(path.toString());
-                productImageRepository.save(productImage);
+                productImage.setImageUrl(fileUrl);
+                productImageService.save(productImage);
 
+//                // 파일 저장 로직
+//                String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+//                String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+//                fileName = timestamp + fileName;
+//                fileName = fileName.replaceAll("[:]", "_");
+//
+//                Path path = Paths.get(uploadDir + fileName);
+//
+//                Files.copy(file.getInputStream(), path);
+//                ProductImage productImage = new ProductImage();
+//                productImage.setProduct(product);
+//                productImage.setDisplayOrder(i);
+//                productImage.setImageUrl(path.toString());
+//                productImageService.save(productImage);
             }
-
         }
-
         return "redirect:/";
     }
 
-    @GetMapping("/products")
+    @GetMapping("/list")
     public String products(Model model) {
 
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productService.findAll();
 
         model.addAttribute("products", products);
 
@@ -87,11 +100,16 @@ public class ProductController {
 
     }
 
-    @GetMapping("/products/{id}")
+    @GetMapping("/{id}")
     public String getProduct(Model model, @PathVariable Long id) {
 
         Product product = productService.findById(id);
+        List<ProductImage> images = productImageService.findByProductId(product.getId());
+        model.addAttribute("images", images);
+
+        String category = product.getCategory().getName();
         model.addAttribute("product", product);
+        model.addAttribute("category", category);
 
         return "product_detail";
 

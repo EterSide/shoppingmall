@@ -1,6 +1,7 @@
 package com.example.shoppingmall.entitiy;
 
 import com.example.shoppingmall.entitiy.status.ProductStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -13,7 +13,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public void save(Product product) {
+    public Product save(Product product) {
 
         Product pro = new Product();
         pro.setName(product.getName());
@@ -25,7 +25,8 @@ public class ProductService {
         pro.setStock(product.getStock());
         pro.setViewCount(product.getViewCount());
 
-        productRepository.save(pro);
+         productRepository.save(pro);
+         return pro;
     }
 
     public List<Product> findAll() {
