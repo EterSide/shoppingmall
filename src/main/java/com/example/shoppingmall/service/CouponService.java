@@ -15,7 +15,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
 
     public List<Coupon> findAll() {
-        return couponRepository.findAll();
+        return couponRepository.findByMemberIsNull();
     }
 
     public Coupon save(Coupon coupon) {
