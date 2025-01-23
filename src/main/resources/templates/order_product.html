@@ -55,7 +55,7 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <form th:action="@{/order/{id}(id=${product.id})}" method="get" enctype="multipart/form-data" class="needs-validation" novalidate>
+  <form th:action="@{/order/{id}(id=${product.id})}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
     <div class="center-container">
       <div class="form-container">
         <h2 class="text-center">상품</h2>
@@ -100,6 +100,6 @@
       </div>
     </div>
   </form>
-  </div>
+</div>
 </body>
 </html>
