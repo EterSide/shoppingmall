@@ -22,9 +22,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/signup")
-    public String signUp(Model model) {
-//        model.addAttribute("content", "signup");
-//        return "layout";
+    public String signUp() {
         return "signup";
     }
 
@@ -44,10 +42,7 @@ public class MemberController {
     }
 
     @GetMapping("/login")
-    public String logIn(Model model) {
-//        model.addAttribute("content", "login");
-//        return "layout";
-
+    public String logIn() {
         return "login";
     }
 

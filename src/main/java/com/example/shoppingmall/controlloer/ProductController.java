@@ -3,15 +3,10 @@ package com.example.shoppingmall.controlloer;
 import com.example.shoppingmall.entitiy.Category;
 import com.example.shoppingmall.entitiy.Product;
 import com.example.shoppingmall.entitiy.ProductImage;
-import com.example.shoppingmall.repository.CategoryRepository;
-import com.example.shoppingmall.repository.ProductImageRepository;
-import com.example.shoppingmall.repository.ProductRepository;
 import com.example.shoppingmall.service.CategoryService;
 import com.example.shoppingmall.service.ProductImageService;
 import com.example.shoppingmall.service.ProductService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -96,7 +91,7 @@ public class ProductController {
 
         model.addAttribute("products", products);
 
-        return "product";
+        return "product_list";
 
     }
 
