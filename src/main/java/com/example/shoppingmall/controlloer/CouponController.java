@@ -6,9 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -19,17 +20,32 @@ public class CouponController {
 
     @GetMapping("/list")
     public String list(Model model) {
+        List<Coupon> coupons = couponService.findAll();
+        model.addAttribute("coupons", coupons);
         return "coupon_list";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/register")
     public String addCoupon() {
-        return "add_coupon";
+        return "register_coupon";
     }
 
-    @PostMapping("/add")
+    @PostMapping("/register")
     public String addCoupon(Coupon coupon, Model model) {
-        return "add_coupon";
+
+        Coupon cp = new Coupon();
+        cp.setName(coupon.getName());
+        cp.setDescription(coupon.getDescription());
+        cp.setDiscount(coupon.getDiscount());
+        cp.setMinOrderAmount(coupon.getMinOrderAmount());
+        cp.setMaxOrderAmount(coupon.getMaxOrderAmount());
+        cp.setQuantity(coupon.getQuantity());
+        cp.setStartDate(coupon.getStartDate());
+        cp.setEndDate(coupon.getEndDate());
+
+
+        couponService.save(cp);
+        return "redirect:/coupon/list";
     }
 
 

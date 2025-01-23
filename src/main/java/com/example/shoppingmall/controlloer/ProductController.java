@@ -106,6 +106,10 @@ public class ProductController {
         model.addAttribute("product", product);
         model.addAttribute("category", category);
 
+        product.setViewCount(product.getViewCount() + 1);
+
+        productService.update(product);
+
         return "product_detail";
 
     }

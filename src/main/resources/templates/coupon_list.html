@@ -28,16 +28,26 @@
             <table class="table table-hover">
                 <thead>
                 <tr>
-                    <th scope="col">상품명</th>
-                    <th scope="col">가격</th>
-                    <th scope="col">상세설명</th>
+                    <th scope="col">쿠폰명</th>
+                    <th scope="col">설명</th>
+                    <th scope="col">할인율</th>
+                    <th scope="col">최소 금액</th>
+                    <th scope="col">최대 할인</th>
+                    <th scope="col">수량</th>
+                    <th scope="col">시작일</th>
+                    <th scope="col">만료일</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="product : ${products}" onclick="location.href='/'">
-                    <td th:text="${product.name}"></td>
-                    <td th:text="${product.price}"></td>
-                    <td th:text="${product.description}"></td>
+                <tr th:each="coupon : ${coupons}" th:onclick="|location.href='@{${coupon.id}}'|">
+                    <td th:text="${coupon.name}"></td>
+                    <td th:text="${coupon.description}"></td>
+                    <td th:text="${coupon.discount}"></td>
+                    <td th:text="${coupon.minOrderAmount}"></td>
+                    <td th:text="${coupon.maxOrderAmount}"></td>
+                    <td th:text="${coupon.quantity}"></td>
+                    <td th:text="${coupon.startDate}"></td>
+                    <td th:text="${coupon.endDate}"></td>
                 </tr>
                 </tbody>
             </table>

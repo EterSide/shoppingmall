@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+  <style>
+    .center-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* 화면 높이를 꽉 채우도록 설정 */
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px; /* 폼의 최대 너비를 설정 */
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+      border-radius: 10px; /* 테두리 둥글게 */
+      background-color: #ffffff; /* 배경색 */
+    }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .preview-container img {
+      max-width: 100px;
+      max-height: 100px;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="center-container">
+    <div class="form-container">
+      <h2 class="text-center">상품 등록</h2>
+      <form th:action="@{/coupon/register}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="name" class="form-label">쿠폰 명</label>
+          <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="description" class="form-label">상세설명</label>
+          <input type="text" class="form-control" id="description" name="description" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="discount" class="form-label">할인율</label>
+          <input type="number" class="form-control" id="discount" name="discount" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="minOrderAmount" class="form-label">최소적용금액</label>
+          <input type="number" class="form-control" id="minOrderAmount" name="minOrderAmount" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="maxOrderAmount" class="form-label">최대할인가</label>
+          <input type="number" class="form-control" id="maxOrderAmount" name="maxOrderAmount" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="quantity" class="form-label">수량</label>
+          <input type="number" class="form-control" id="quantity" name="quantity" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="startDate" class="form-label">시작일</label>
+          <input type="datetime-local" class="form-control" id="startDate" name="startDate" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="endDate" class="form-label">만료일</label>
+          <input type="datetime-local" class="form-control" id="endDate" name="endDate" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">쿠폰등록</button>
+      </form>
+    </div>
+  </div>
+</div>
+</body>
+</html>
