@@ -39,27 +39,19 @@
 
     let price = parseInt(document.querySelector('.price').textContent);
 
-    function increasePrice(event) {
-      event.preventDefault();
-      let currentPrice = parseInt(document.querySelector('.price').textContent);
-      currentPrice += 1000;
-      document.querySelector('.price').textContent = currentPrice;
-      clicks = 0;
-    }
+    function updateTotalPrice(productPrice) {
+      const quantityInput = document.getElementById('quantity');
+      const totalPriceElement = document.getElementById('total-price');
 
-    function decreasePrice(event) {
-      clicks++;
-      event.preventDefault();
-      let currentPrice = parseInt(document.querySelector('.price').textContent);
-      currentPrice -= 1000;
-      if (currentPrice < 0) {
-        currentPrice = 0;
-      }
-      document.querySelector('.price').textContent = currentPrice;
-      clicks = 0;
+      const quantity = parseInt(quantityInput.value);
+      const totalPrice = productPrice * quantity;
+
+      totalPriceElement.textContent = totalPrice.toLocaleString() + '원';
     }
 
   </script>
+
+
 </head>
 <body>
 <div layout:fragment="content">
@@ -83,15 +75,39 @@
           <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
         </div>
 
+          <div>
         <div class="mb-3">
-          <form>
-            <div class="price-container">
-              <label class="form-label"> 가격 </label>
-              <span class="price" th:value="${product.price}" th:text="${product.price}" id="price">10000</span>
-              <button class="btn-increase" onclick="increasePrice(event)">+</button>
-              <button class="btn-decrease" onclick="decreasePrice(event)">-</button>
+            <input id="quantity" type="number" value="1" min="1">
+            <button type="button" onclick="increaseQuantity(event)">+</button>
+            <button type="button" onclick="decreaseQuantity(event)">-</button>
+            <div>
+              총 가격: <span id="total-price" th:text="${product.price} + '원'"></span>
             </div>
-          </form>
+          </div>
+        </div>
+
+        <script th:inline="javascript">
+          const productPrice = /*[[${product.price}]]*/ 0;
+          function increaseQuantity() {
+            event.preventDefault(); // 기본 이벤트 방지
+            const quantityInput = document.getElementById('quantity');
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+            updateTotalPrice(productPrice);
+          }
+
+          function decreaseQuantity() {
+            event.preventDefault(); // 기본 이벤트 방지
+            const quantityInput = document.getElementById('quantity');
+            if (quantityInput.value > 1) {
+              quantityInput.value = parseInt(quantityInput.value) - 1;
+              updateTotalPrice(productPrice);
+            }
+          }
+        </script>
+
+        <div class="mb-3">
+          <label for="coupon" class="form-label">쿠폰 적용 가격</label>
+          <input type="text" class="form-control" id="coupon" name="coupon"  disabled>
         </div>
 
         <div class="mb-3">
@@ -107,6 +123,11 @@
           <label for="description" class="form-label">상세설명</label>
           <input type="text" class="form-control" id="description" name="description" th:value="${product.getDescription()}" disabled>
         </div>
+
+
+
+
+
         <button type="submit" class="btn btn-primary w-100"> 상품구매 </button>
       </div>
     </div>

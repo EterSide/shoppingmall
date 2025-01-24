@@ -35,23 +35,6 @@
       border-radius: 5px;
     }
   </style>
-  <script>
-    function loadFiles(input) {
-      const files = input.files;
-      const previewContainer = document.getElementById("preview-container");
-      previewContainer.innerHTML = ""; // 기존 미리보기 초기화
-
-      Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          const img = document.createElement("img");
-          img.src = e.target.result;
-          previewContainer.appendChild(img);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-  </script>
 </head>
 <body>
 <div layout:fragment="content">
