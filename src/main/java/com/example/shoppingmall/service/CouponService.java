@@ -22,4 +22,12 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
+    public List<Coupon> findByMemberId(Long memberId) {
+        return couponRepository.findByMemberId(memberId);
+    }
+
+    public Optional<Coupon> findById(Long id) {
+        return couponRepository.findById(id);
+    }
+
 }

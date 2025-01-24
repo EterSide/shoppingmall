@@ -12,4 +12,7 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
 
     List<Coupon> findByMemberIsNull();
 
+    List<Coupon> findByMemberId(Long id);
+
+    Long member(Member member);
 }
