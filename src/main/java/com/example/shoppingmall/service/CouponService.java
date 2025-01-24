@@ -15,16 +15,13 @@ public class CouponService {
     private final CouponRepository couponRepository;
 
     public List<Coupon> findAll() {
-        return couponRepository.findByMemberIsNull();
+        return couponRepository.findAll();
     }
 
     public Coupon save(Coupon coupon) {
         return couponRepository.save(coupon);
     }
 
-    public List<Coupon> findByMemberId(Long memberId) {
-        return couponRepository.findByMemberId(memberId);
-    }
 
     public Optional<Coupon> findById(Long id) {
         return couponRepository.findById(id);

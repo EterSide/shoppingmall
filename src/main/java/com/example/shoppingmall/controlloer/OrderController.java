@@ -18,8 +18,10 @@ public class OrderController {
 
     private final OrderService orderService;
     private final ProductService productService;
+    private final MemberService memberService;
     private final ProductImageService productImageService;
     private final CouponService couponService;
+    private final IssuedCouponService issuedCouponService;
     private final OrderItemService orderItemService;
     private final DeliveryService deliveryService;
 
@@ -30,11 +32,24 @@ public class OrderController {
         List<ProductImage> images = productImageService.findByProductId(product.getId());
 
         Member member = (Member) session.getAttribute("member");
+        Optional<Member> member1 = memberService.findById(member.getId());
 
-        if(member != null) {
-            List<Coupon> coupons = couponService.findByMemberId(member.getId());
-            model.addAttribute("coupons", coupons);
+        if(member1.isPresent()) {
+            List<IssuedCoupon> coupons = issuedCouponService.findByMemberId(member.getId());
+            List<IssuedCoupon> issuedCoupons = issuedCouponService.findAll();
+
+
+
+            model.addAttribute("coupons", issuedCoupons);
+            System.out.println(issuedCoupons.get(0));
         }
+
+//        if(member != null) {
+//            //List<IssuedCoupon> coupons = issuedCouponService.findByMemberId(member.getId());
+//            List<IssuedCoupon> issuedCoupons = member.getIssuedCoupons();
+//            model.addAttribute("coupons", issuedCoupons);
+//            System.out.println(issuedCoupons.get(0));
+//        }
 
         model.addAttribute("images", images);
         model.addAttribute("product", product);

@@ -1,17 +1,28 @@
 package com.example.shoppingmall.entitiy;
 
-import jakarta.persistence.Id;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
-import org.springframework.data.redis.core.RedisHash;
+import lombok.NoArgsConstructor;
 
-@Getter
-@RedisHash(value = "cart", timeToLive = 60)
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Cart extends BaseTimeEntity{
-
     @Id
-    private String id;
-    private String productId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
 
 }
 

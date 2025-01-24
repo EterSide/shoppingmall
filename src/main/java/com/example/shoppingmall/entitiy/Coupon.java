@@ -41,9 +41,9 @@ public class Coupon extends BaseTimeEntity {
     @Column(nullable = false)
     private int quantity; // 쿠폰 수량
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "member_id")
+//    private Member member;
 
     @Enumerated(EnumType.STRING)
     private CouponStatus status = CouponStatus.ACTIVE;

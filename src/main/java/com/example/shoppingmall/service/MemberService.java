@@ -28,6 +28,10 @@ public class MemberService {
         return memberRepository.findByUserIdAndPassword(id, password);
     }
 
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
     public Optional<Member> idCheck(String id) {
         return memberRepository.findByUserId(id);
     }
