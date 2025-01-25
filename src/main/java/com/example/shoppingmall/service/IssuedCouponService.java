@@ -20,9 +20,9 @@ public class IssuedCouponService {
         return issuedCouponRepository.findAll();
     }
 
-//    public IssuedCoupon save(IssuedCoupon issuedCoupon) {
-//        return issuedCouponRepository.save(coupon);
-//    }
+    public IssuedCoupon save(IssuedCoupon issuedCoupon) {
+        return issuedCouponRepository.save(issuedCoupon);
+    }
 
 
     public List<IssuedCoupon> findByMemberId(Long id) {

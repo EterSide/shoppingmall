@@ -42,7 +42,7 @@
     <div class="form-container">
       <h2 class="text-center">쿠폰 등록</h2>
       <th:block th:each="coupon : ${coupons}" th:if="${coupon.status.toString().equals('ACTIVE')}">
-        <div class="mb-3" th:if="${}">
+        <div class="mb-3" >
           <div class="card border-success mb-3" style="max-width: 18rem;">
             <div class="card-header bg-transparent border-success">Header</div>
             <div class="card-body text-success">
