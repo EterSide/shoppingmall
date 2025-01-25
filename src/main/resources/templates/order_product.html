@@ -118,12 +118,12 @@
         <th:block th:if="${session.member}">
 
           <div class="mb-3">
-            <label for="coupon_id" class="form-label"> 쿠폰 </label>
+            <label for="issued_coupon" class="form-label"> 쿠폰 </label>
             <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this.value)">
               <option selected value="0"> 쿠폰 미사용 </option>
-                <th:block th:each="coupons : ${coupons}">
-                  <option th:value="${coupons.coupon.getDiscount()}" th:text="${coupons.coupon.getName()}"></option>
-                  <input type="hidden" id="coupon_id" name="coupon_id" th:value="${coupons.coupon.getId()}">
+                <th:block th:each="cp : ${coupons}">
+                  <option th:value="${cp.coupon.getDiscount()}" th:text="${cp.coupon.getName()}"><input type="hidden" id="coupon_id" name="coupon_id" th:value="${cp.coupon.getId()}"/></option>
+
                 </th:block>
             </select>
           </div>
@@ -150,9 +150,11 @@
         <div class="mb-3">
           총 가격: <span id="total-price" th:text="${product.price} + '원'"></span>
         </div>
-        <div class="mb-3">
-          쿠폰 적용 가격: <span id="coupon-total-price" th:text="${product.price} + '원'"></span>
-        </div>
+        <th:block th:if="${session.member}">
+          <div class="mb-3">
+            쿠폰 적용 가격: <span id="coupon-total-price" th:text="${product.price} + '원'"></span>
+          </div>
+        </th:block>
 
         <button type="submit" class="btn btn-primary w-100"> 상품구매 </button>
       </div>

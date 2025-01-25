@@ -32,16 +32,13 @@ public class OrderController {
         List<ProductImage> images = productImageService.findByProductId(product.getId());
 
         Member member = (Member) session.getAttribute("member");
-        Optional<Member> member1 = memberService.findById(member.getId());
 
-        if(member1.isPresent()) {
-            List<IssuedCoupon> coupons = issuedCouponService.findByMemberId(member.getId());
-            List<IssuedCoupon> issuedCoupons = issuedCouponService.findAll();
+        if(member != null) {
 
-
+            List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
 
             model.addAttribute("coupons", issuedCoupons);
-            System.out.println(issuedCoupons.get(0));
+
         }
 
 //        if(member != null) {
