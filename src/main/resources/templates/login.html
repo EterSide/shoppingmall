@@ -38,14 +38,14 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">로그인</button>
+                <div style="margin-top: 2%">
+                    <a href="/user/signup" type="submit" class="btn btn-primary w-100">회원가입</a>
+                </div>
                 <br>
                 <div th:if="${error}" class="alert alert-danger mt-3">
                     <span th:text="${error}"></span>
                 </div>
             </form>
-            <div style="margin-top: 10px">
-                <a href="/user/signup" type="submit" class="btn btn-primary w-100">회원가입</a>
-            </div>
         </div>
     </div>
 </div>
