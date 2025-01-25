@@ -17,10 +17,20 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/issuedcoupon")
+@RequestMapping("/issued_coupon")
 public class IssuedCouponController {
 
     private final IssuedCouponService issuedCouponService;
+    private final CouponService couponService;
+
+    @GetMapping("/register")
+    public String register(Model model) {
+
+        List<Coupon> coupons = couponService.findAll();
+        model.addAttribute("coupons", coupons);
+
+        return "register_issued_coupon";
+    }
 
 //    @GetMapping("/list")
 //    public String list(Model model, HttpSession session) {
