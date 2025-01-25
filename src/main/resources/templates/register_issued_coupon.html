@@ -42,7 +42,7 @@
     <div class="form-container">
       <h2 class="text-center">쿠폰 등록</h2>
       <th:block th:each="coupon : ${coupons}" th:if="${coupon.status.toString().equals('ACTIVE')}">
-        <div class="mb-3" >
+        <div class="mb-3 coupon-item" th:data-coupon-id="${coupon.id}">
           <div class="card border-success mb-3" style="max-width: 18rem;">
             <div class="card-header bg-transparent border-success">Header</div>
             <div class="card-body text-success">
@@ -56,5 +56,37 @@
     </div>
   </div>
 </div>
+
+<script>
+  function checkCoupon(element) {
+    const couponId = element.getAttribute('data-coupon-id');
+
+    // AJAX 요청 보내기
+    fetch(`/issued_coupon/register/${couponId}`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.exists) {
+                alert('쿠폰이 존재합니다!');
+              } else {
+                alert('쿠폰이 존재하지 않습니다.');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('쿠폰 조회 중 오류가 발생했습니다.');
+            });
+  }
+
+  // 모든 쿠폰 항목에 이벤트 리스너 추가
+  document.querySelectorAll('.coupon-item').forEach(item => {
+    item.addEventListener('click', function() {
+      checkCoupon(this);
+    });
+  });
+</script>
+
 </body>
 </html>
+
+
+

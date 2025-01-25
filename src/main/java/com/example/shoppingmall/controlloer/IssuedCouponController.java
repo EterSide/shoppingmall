@@ -8,14 +8,15 @@ import com.example.shoppingmall.service.CouponService;
 import com.example.shoppingmall.service.IssuedCouponService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -29,7 +30,7 @@ public class IssuedCouponController {
     @GetMapping("/register")
     public String register(Model model, HttpSession session) {
 
-        Member member = (Member) session.getAttribute("user");
+        Member member = (Member) session.getAttribute("member");
 
         if(member != null) {
             List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
@@ -44,22 +45,31 @@ public class IssuedCouponController {
         return "register_issued_coupon";
     }
 
-    @PostMapping("/register/{coupon_id}")
-    public String register(Model model, @PathVariable Long coupon_id, HttpSession session) {
+    @GetMapping("/register/{coupon_id}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> register(Model model, @PathVariable Long coupon_id, HttpSession session) {
 
         Optional<Coupon> coupon = couponService.findById(coupon_id);
-        Member member = (Member) session.getAttribute("user");
+        Member member = (Member) session.getAttribute("member");
         IssuedCoupon issuedCoupon = new IssuedCoupon();
+
+        Map<String, Boolean> response = new HashMap<>();
+
+        boolean isTrue = false;
 
         if(coupon.isPresent()) {
 
             issuedCoupon.setCoupon(coupon.get());
             issuedCoupon.setMember(member);
+            issuedCoupon.setIssuedDate(LocalDateTime.now());
             issuedCouponService.save(issuedCoupon);
+            isTrue = true;
 
         }
 
-        return "";
+        response.put("isTrue", isTrue);
+
+        return ResponseEntity.ok(response);
 
     }
 
