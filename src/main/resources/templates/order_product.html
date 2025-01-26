@@ -120,9 +120,12 @@
             const salePrice = totalPrice * (discount / 100);
 
             let discountedPrice = 0;
+
             if (totalPrice < minAmount){
               //적용이 불가하다고 알려줘야함 (최소 주문 금액이 얼마다)
               alert('쿠폰 적용이 불가합니다.')
+              selectElement.value=0;
+              document.getElementById('coupon-total-price').textContent =""
             }else{
               if(salePrice > maxAmount){
                 //할인 후 금액
@@ -130,10 +133,18 @@
               }else{
                 discountedPrice = totalPrice * (1-discount/100);
               }
+
+              if(selectElement.value!=0){
+                document.getElementById('coupon-total-price').textContent =
+                        `쿠폰 적용 가격: ${Math.round(discountedPrice).toLocaleString()}원 (${discount}% 할인)`;
+
+              }else{
+                document.getElementById('coupon-total-price').textContent =""
+              }
             }
 
-            document.getElementById('coupon-total-price').textContent =
-                    `${Math.round(discountedPrice).toLocaleString()}원 (${discount}% 할인)`;
+
+
 
 
 
@@ -196,7 +207,7 @@
         </div>
         <th:block th:if="${session.member}">
           <div class="mb-3" id="coupon-price">
-            쿠폰 적용 가격: <span id="coupon-total-price" th:text="${product.price} + '원'"></span>
+            <span id="coupon-total-price"></span>
           </div>
         </th:block>
         <div class="container">
