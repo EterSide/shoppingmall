@@ -73,35 +73,16 @@ public class IssuedCouponController {
 
     }
 
-//    @GetMapping("/list")
-//    public String list(Model model, HttpSession session) {
-//
-//        List<IssuedCoupon> coupons = issuedCouponService.findAll();
-//        model.addAttribute("coupons", coupons);
-//        return "coupon_list";
-//    }
-//
-//    @GetMapping("/register")
-//    public String addCoupon() {
-//        return "register_coupon";
-//    }
+    @GetMapping("/list")
+    public String list(Model model, HttpSession session) {
 
-//    @PostMapping("/register")
-//    public String addCoupon(IssuedCoupon coupon, Model model) {
-//
-//        Coupon cp = new Coupon();
-//        cp.setName(coupon.getName());
-//        cp.setDescription(coupon.getDescription());
-//        cp.setDiscount(coupon.getDiscount());
-//        cp.setMinOrderAmount(coupon.getMinOrderAmount());
-//        cp.setMaxOrderAmount(coupon.getMaxOrderAmount());
-//        cp.setQuantity(coupon.getQuantity());
-//        cp.setStartDate(coupon.getStartDate());
-//        cp.setEndDate(coupon.getEndDate());
-//
-//        issuedCouponService.save(cp);
-//        return "redirect:/coupon/list";
-//    }
+        Member member = (Member) session.getAttribute("member");
+
+        List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
+        model.addAttribute("issuedCoupons", issuedCoupons);
+
+        return "issued_coupon_list";
+    }
 
 
 

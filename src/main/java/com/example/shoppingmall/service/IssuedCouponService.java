@@ -33,4 +33,16 @@ public class IssuedCouponService {
         return issuedCouponRepository.findByMemberIdAndCouponId(member_id, coupon_id);
     }
 
+    public void update(IssuedCoupon issuedCoupon) {
+        issuedCouponRepository.save(issuedCoupon);
+    }
+
+    public Optional<IssuedCoupon> findById(Long id) {
+        return issuedCouponRepository.findById(id);
+    }
+
+//    public List<IssuedCoupon> findByMemberIdAndUsed(Long member_id, boolean used) {
+//        return issuedCouponRepository.findByMemberIdAndUsed(member_id, used);
+//    }
+
 }

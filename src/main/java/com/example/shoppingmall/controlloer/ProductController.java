@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -84,10 +85,15 @@ public class ProductController {
         return "redirect:/";
     }
 
-    @GetMapping("/list")
-    public String products(Model model) {
+    @GetMapping("/list/{id}")
+    public String products(Model model, @PathVariable Long id) {
 
-        List<Product> products = productService.findAll();
+        Category category = new Category();
+        Optional<Category> op = categoryService.findById(id);
+        if (op.isPresent()) {
+            category = op.get();
+        }
+        List<Product> products = productService.findByCategory(category);
 
         model.addAttribute("products", products);
 

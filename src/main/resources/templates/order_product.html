@@ -77,8 +77,8 @@
           <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" disabled>
         </div>
 
-          <div>
-        <div class="mb-3">
+        <div>
+          <div class="mb-3">
             <input id="quantity" type="number" value="1" min="1" name="quantity">
             <button type="button" onclick="increaseQuantity(event)">+</button>
             <button type="button" onclick="decreaseQuantity(event)">-</button>
@@ -107,13 +107,13 @@
           const coupon = /*[[${coupon}]]*/ null;
 
           function applyCoupon(discountRate) {
-              const quantity = parseInt(document.getElementById('quantity').value);
-              console.log(discountRate);
-              const totalPrice = productPrice * quantity;
-              const discountedPrice = totalPrice * (1 - discountRate / 100);
+            const quantity = parseInt(document.getElementById('quantity').value);
+            console.log(discountRate);
+            const totalPrice = productPrice * quantity;
+            const discountedPrice = totalPrice * (1 - discountRate / 100);
 
-              document.getElementById('coupon-total-price').textContent =
-                      `${Math.round(discountedPrice).toLocaleString()}원 (${discountRate}% 할인)`;
+            document.getElementById('coupon-total-price').textContent =
+                    `${Math.round(discountedPrice).toLocaleString()}원 (${discountRate}% 할인)`;
 
           }
         </script>
@@ -122,11 +122,14 @@
             <label for="issued_coupon" class="form-label"> 쿠폰 </label>
             <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this.value)">
               <option selected value="0"> 쿠폰 미사용 </option>
-                <th:block th:each="cp : ${coupons}">
-                  <option th:value="${cp.coupon.getDiscount()}" th:text="${cp.coupon.getName()}"><input type="hidden" id="coupon_id" name="coupon_id" th:value="${cp.coupon.getId()}"/></option>
-                </th:block>
+              <th:block th:each="cp : ${coupons}">
+                <option th:value="${cp.coupon.getDiscount()}" th:text="${cp.coupon.getName()}"></option>
+                <input type="hidden" id="coupon_id" name="coupon_id" th:value="${cp.coupon.getId()}"/>
+              </th:block>
             </select>
+
           </div>
+
 
 
           <div class="mb-3">

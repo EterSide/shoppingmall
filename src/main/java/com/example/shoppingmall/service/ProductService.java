@@ -1,5 +1,6 @@
 package com.example.shoppingmall.service;
 
+import com.example.shoppingmall.entitiy.Category;
 import com.example.shoppingmall.entitiy.Product;
 import com.example.shoppingmall.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,9 @@ public class ProductService {
 
     public void update(Product product) {
         productRepository.save(product);
+    }
+
+    public List<Product> findByCategory(Category category) {
+        return productRepository.findByCategory(category);
     }
 }
