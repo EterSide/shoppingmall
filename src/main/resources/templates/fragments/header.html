@@ -74,8 +74,8 @@
                         <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             카트 <span class="badge bg-primary" id="cart-count">0</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown" id="cart-dropdown-menu">
-                            <li><span class="dropdown-item">장바구니를 불러오는 중...</span></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="cartDropdown" id="cart-dropdown-menu">
+                            <li><span class="dropdown-item text-center">장바구니를 불러오는 중...</span></li>
                         </ul>
                     </li>
                 </ul>
@@ -91,6 +91,57 @@
     </nav>
     <!-- 고정 네비게이션바를 위한 여백 -->
     <div style="margin-top: 76px;"></div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 카트 관련 스크립트 -->
+    <script th:inline="javascript">
+        console.log('Script loaded'); // 스크립트 로드 확인
+        
+        // 로그인 상태를 전역 변수로 설정
+        const isLoggedIn = [[${session.member != null}]];
+        console.log('isLoggedIn:', isLoggedIn);
+        
+        // 기본 테스트 로그
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');
+            console.log('Cart count element:', document.getElementById('cart-count'));
+            console.log('Cart dropdown menu:', document.getElementById('cart-dropdown-menu'));
+        });
+        
+        // 나머지 카트 관련 함수들...
+        function updateCartDropdown() {
+            console.log('updateCartDropdown called');
+            // ... 기존 코드 ...
+        }
+    </script>
 </div>
+
+<style>
+    #cart-dropdown-menu {
+        min-width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    #cart-dropdown-menu .dropdown-item {
+        padding: 0.5rem 1rem;
+        white-space: normal;  /* 긴 상품명이 있을 경우를 위해 줄바꿈 허용 */
+    }
+
+    #cart-dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    #cart-dropdown-menu img {
+        border-radius: 4px;
+    }
+
+    .dropdown-menu-end {
+        right: 0;
+        left: auto;
+    }
+</style>
 </body>
 </html>
