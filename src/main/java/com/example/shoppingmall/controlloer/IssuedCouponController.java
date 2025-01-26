@@ -55,19 +55,19 @@ public class IssuedCouponController {
 
         Map<String, Boolean> response = new HashMap<>();
 
-        boolean isTrue = false;
+        boolean isTrue = true;
 
-        if(coupon.isPresent()) {
+        if(coupon.isPresent() && issuedCouponService.findMemberAndCoupon(member.getId(), coupon_id).isEmpty()) {
 
             issuedCoupon.setCoupon(coupon.get());
             issuedCoupon.setMember(member);
             issuedCoupon.setIssuedDate(LocalDateTime.now());
             issuedCouponService.save(issuedCoupon);
-            isTrue = true;
+            isTrue = false;
 
         }
 
-        response.put("isTrue", isTrue);
+        response.put("exists", isTrue);
 
         return ResponseEntity.ok(response);
 

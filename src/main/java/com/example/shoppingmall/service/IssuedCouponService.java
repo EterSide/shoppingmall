@@ -29,4 +29,8 @@ public class IssuedCouponService {
         return issuedCouponRepository.findByMemberId(id);
     }
 
+    public List<IssuedCoupon> findMemberAndCoupon(Long member_id, Long coupon_id) {
+        return issuedCouponRepository.findByMemberIdAndCouponId(member_id, coupon_id);
+    }
+
 }

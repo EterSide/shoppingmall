@@ -20,14 +20,14 @@
       background-color: #ffffff; /* 배경색 */
     }
 
-    .preview-container {
+
+    .preview-container img {
+
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 10px;
-    }
 
-    .preview-container img {
       max-width: 100px;
       max-height: 100px;
       object-fit: cover;
@@ -35,6 +35,39 @@
       border-radius: 5px;
     }
   </style>
+  <script>
+    function checkCoupon(element) {
+      const couponId = element.getAttribute('data-coupon-id');
+      console.log('쿠폰 ID:', couponId); // 쿠폰 ID 확인
+
+      fetch(`/issued_coupon/register/${couponId}`)
+              .then(response => {
+                console.log('서버 응답:', response); // 서버 응답 확인
+                return response.json();
+              })
+              .then(data => {
+                console.log('응답 데이터:', data); // 응답 데이터 확인
+                if (data.exists) {
+                  alert('쿠폰이 존재합니다!');
+                } else {
+                  alert('쿠폰이 존재하지 않습니다.\n쿠폰을 발급하겠습니다.');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error); // 에러 로그 출력
+                alert('쿠폰 조회 중 오류가 발생했습니다.');
+              });
+    }
+
+    // 모든 쿠폰 항목에 이벤트 리스너 추가
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.coupon-item').forEach(item => {
+        item.addEventListener('click', function () {
+          checkCoupon(this);
+        });
+      });
+    });
+  </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -56,35 +89,6 @@
     </div>
   </div>
 </div>
-
-<script>
-  function checkCoupon(element) {
-    const couponId = element.getAttribute('data-coupon-id');
-
-    // AJAX 요청 보내기
-    fetch(`/issued_coupon/register/${couponId}`)
-            .then(response => response.json())
-            .then(data => {
-              if (data.exists) {
-                alert('쿠폰이 존재합니다!');
-              } else {
-                alert('쿠폰이 존재하지 않습니다.');
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              alert('쿠폰 조회 중 오류가 발생했습니다.');
-            });
-  }
-
-  // 모든 쿠폰 항목에 이벤트 리스너 추가
-  document.querySelectorAll('.coupon-item').forEach(item => {
-    item.addEventListener('click', function() {
-      checkCoupon(this);
-    });
-  });
-</script>
-
 </body>
 </html>
 
