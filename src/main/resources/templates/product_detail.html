@@ -148,7 +148,7 @@
       <div class="product-description" th:text="${product.getDescription()}"></div>
 
       <form th:action="@{/order/{id}(id=${product.id})}" method="get" class="purchase-section">
-        <!-- <div class="quantity-selector">
+        <div class="quantity-selector">
           <label for="quantity">수량:</label>
           <select id="quantity" name="quantity" class="form-select" style="width: 100px">
             <option th:each="i : ${#numbers.sequence(1, product.getStock() < 10 ? product.getStock() : 10)}" 
@@ -156,10 +156,9 @@
                     th:text="${i}">
             </option>
           </select>
-        </div> -->
-        <button type="submit" class="btn-purchase">
-          구매하기
-        </button>
+        </div>
+        <button type="button" class="btn-cart" onclick="addToCart()">장바구니 담기</button>
+        <button type="submit" class="btn-purchase">구매하기</button>
       </form>
     </div>
   </div>
@@ -167,6 +166,26 @@
   <script>
     function updateMainImage(src) {
       document.querySelector('.main-image').src = src;
+    }
+
+    function addToCart() {
+      const quantity = document.getElementById('quantity').value;
+      const productId = [[${product.id}]];
+      
+      fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `productId=${productId}&quantity=${quantity}`
+      })
+      .then(response => response.text())
+      .then(result => {
+        alert(result);
+      })
+      .catch(error => {
+        alert('장바구니 담기에 실패했습니다.');
+      });
     }
   </script>
 </div>

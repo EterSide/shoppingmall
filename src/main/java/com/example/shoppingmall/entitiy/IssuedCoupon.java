@@ -1,14 +1,13 @@
 package com.example.shoppingmall.entitiy;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@Setter  // @Data 제거
 @NoArgsConstructor
 @AllArgsConstructor
 public class IssuedCoupon extends BaseTimeEntity {
