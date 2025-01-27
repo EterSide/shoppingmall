@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+    <style>
+        .cart-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            gap: 20px;
+        }
+
+        .cart-item-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .cart-item-price {
+            color: #e44d26;
+            font-weight: bold;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .cart-summary {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .coupon-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .coupon-section select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #coupon-total-price {
+            color: #e44d26;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .total-price {
+            margin: 20px 0;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .total-price > div {
+            margin: 8px 0;
+            font-size: 1.1em;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .checkout-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="cart-container">
+        <div class="cart-header">
+            <h2>장바구니</h2>
+            <div>
+                <label>
+                    <input type="checkbox" id="select-all" onchange="toggleAllItems()">
+                    전체 선택
+                </label>
+            </div>
+        </div>
+
+        <div id="cart-items">
+            <!-- 장바구니 아이템들이 여기에 동적으로 로드됩니다 -->
+        </div>
+
+        <div class="cart-summary">
+            <div class="coupon-section">
+                <label for="issued_coupon" class="form-label">쿠폰 적용</label>
+                <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this)">
+                    <option selected value="0">쿠폰 미사용</option>
+                    <th:block th:each="cp : ${coupons}">
+                        <option
+                            th:value="${cp.coupon.getId()}"
+                            th:text="${cp.coupon.getName()}"
+                            th:attr="
+                                data-discount=${cp.coupon.getDiscount()},
+                                data-minOrderAmount=${cp.coupon.getMinOrderAmount()},
+                                data-maxOrderAmount=${cp.coupon.getMaxOrderAmount()}"
+                        ></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <div class="total-price">
+                <div>상품 금액: <span id="original-price">0</span>원</div>
+                <div id="coupon-total-price"></div>
+            </div>
+
+            <button class="checkout-btn" onclick="proceedToCheckout()">구매하기</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 장바구니 아이템 로드
+        function loadCartItems() {
+            fetch('/cart/items')
+                .then(response => response.json())
+                .then(data => {
+                    const cartItemsContainer = document.getElementById('cart-items');
+                    cartItemsContainer.innerHTML = data.items.map(item => `
+                        <div class="cart-item" data-id="${item.id}">
+                            <input type="checkbox" class="item-checkbox" 
+                                   onchange="updateSelection(${item.id}, this.checked)">
+                            <img src="${item.product.imageUrl}" class="cart-item-image" 
+                                 alt="${item.product.name}">
+                            <div class="cart-item-info">
+                                <div class="cart-item-title">${item.product.name}</div>
+                                <div class="cart-item-price">${item.product.price.toLocaleString()}원</div>
+                                <div class="quantity-controls">
+                                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                                    <input type="number" class="quantity-input" value="${item.quantity}"
+                                           onchange="updateQuantity(${item.id}, this.value, true)"
+                                           min="1">
+                                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    calculateTotal();
+                });
+        }
+
+        // 수량 업데이트
+        function updateQuantity(cartItemId, change, isDirectInput = false) {
+            const input = document.querySelector(`[data-id="${cartItemId}"] .quantity-input`);
+            let newQuantity = isDirectInput ? parseInt(change) : parseInt(input.value) + change;
+            if (newQuantity < 1) newQuantity = 1;
+
+            fetch('/cart/update-quantity', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `cartItemId=${cartItemId}&quantity=${newQuantity}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                input.value = data.quantity;
+                calculateTotal();
+            });
+        }
+
+        // 선택 상태 업데이트
+        function updateSelection(cartItemId, selected) {
+            fetch('/cart/update-selected', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `cartItemId=${cartItemId}&selected=${selected}`
+            })
+            .then(() => calculateTotal());
+        }
+
+        // 전체 선택/해제
+        function toggleAllItems() {
+            const selectAll = document.getElementById('select-all');
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+                updateSelection(checkbox.closest('.cart-item').dataset.id, selectAll.checked);
+            });
+        }
+
+        // 쿠폰 적용
+        function applyCoupon(selectElement) {
+            const originalPrice = parseInt(document.getElementById('original-price').textContent.replace(/,/g, ''));
+            const couponTotalPrice = document.getElementById('coupon-total-price');
+            
+            // 쿠폰 미사용 선택 시
+            if (selectElement.value == 0) {
+                couponTotalPrice.textContent = "";
+                return;
+            }
+
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const discount = parseInt(selectedOption.getAttribute('data-discount'));
+            const maxAmount = parseInt(selectedOption.getAttribute('data-maxOrderAmount'));
+            const minAmount = parseInt(selectedOption.getAttribute('data-minOrderAmount'));
+
+            // 최소 주문금액 체크
+            if (originalPrice < minAmount) {
+                alert(`최소 주문금액(${minAmount.toLocaleString()}원)을 충족하지 않습니다.`);
+                selectElement.value = 0;
+                couponTotalPrice.textContent = "";
+                return;
+            }
+
+            // 할인 금액 계산
+            const salePrice = originalPrice * (discount / 100);
+            let discountedPrice = 0;
+
+            // 최대 할인금액 적용
+            if (salePrice > maxAmount) {
+                discountedPrice = originalPrice - maxAmount;
+            } else {
+                discountedPrice = originalPrice * (1 - discount/100);
+            }
+
+            couponTotalPrice.textContent = 
+                `쿠폰 적용 가격: ${Math.round(discountedPrice).toLocaleString()}원 (${discount}% 할인)`;
+        }
+
+        // 총액 계산
+        function calculateTotal() {
+            const selectedItems = Array.from(document.querySelectorAll('.item-checkbox:checked'))
+                .map(checkbox => checkbox.closest('.cart-item'));
+            
+            const total = selectedItems.reduce((sum, item) => {
+                const price = parseInt(item.querySelector('.cart-item-price').textContent.replace(/[^0-9]/g, ''));
+                const quantity = parseInt(item.querySelector('.quantity-input').value);
+                return sum + (price * quantity);
+            }, 0);
+
+            document.getElementById('original-price').textContent = total.toLocaleString();
+            
+            // 쿠폰 재적용
+            const couponSelect = document.getElementById('issued_coupon');
+            if (couponSelect.value != 0) {
+                applyCoupon(couponSelect);
+            }
+        }
+
+        // 구매하기
+        function proceedToCheckout() {
+            const selectedItems = document.querySelectorAll('.item-checkbox:checked');
+            if (selectedItems.length === 0) {
+                alert('구매할 상품을 선택해주세요.');
+                return;
+            }
+            // 구매 페이지로 이동하는 로직 구현
+        }
+
+        // 초기 로드
+        document.addEventListener('DOMContentLoaded', loadCartItems);
+    </script>
+</div>
+</body>
+</html>

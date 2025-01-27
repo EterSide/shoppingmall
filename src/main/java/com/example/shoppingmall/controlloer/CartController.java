@@ -1,6 +1,8 @@
 package com.example.shoppingmall.controlloer;
 
+import com.example.shoppingmall.entitiy.IssuedCoupon;
 import com.example.shoppingmall.service.CartService;
+import com.example.shoppingmall.service.IssuedCouponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +25,7 @@ import com.example.shoppingmall.entitiy.Cart;
 public class CartController {
 
     private final CartService cartService;
+    private final IssuedCouponService issuedCouponService;
 
     @PostMapping("/add")
     @ResponseBody
@@ -47,10 +50,13 @@ public class CartController {
         
         List<Cart> cartItems = cartService.getCartItems(member.getId());
         int totalPrice = cartService.calculateTotalPrice(cartItems);
-        
+
+        List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
+
+        model.addAttribute("coupons", issuedCoupons);
         model.addAttribute("cartItems", cartItems);
         model.addAttribute("totalPrice", totalPrice);
-        return "cart/cart_list";
+        return "cart_list";
     }
 
     @PostMapping("/update-quantity")
