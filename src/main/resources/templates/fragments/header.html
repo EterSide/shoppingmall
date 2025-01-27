@@ -8,9 +8,11 @@
 </head>
 <body>
 <div th:fragment="header">
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"> 로고 </a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <span class="text-primary">SHOP</span>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -19,14 +21,14 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        <a class="nav-link active fw-medium" aria-current="page" href="/">홈</a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle fw-medium" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             카테고리
                         </a>
-                        <ul class="dropdown-menu">
+                        <ul class="dropdown-menu border-0 shadow-sm">
                             <th:block th:each="category : ${categories}">
                                 <li> <a class="dropdown-item" th:text="${category.name}" th:href="@{/product/list/{id}(id=${category.id})}"></a> </li>
                             </th:block>
@@ -68,16 +70,14 @@
                         <a class="nav-link" href="/user/logout"> 로그아웃 </a>
                     </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" 
+                           data-bs-toggle="dropdown" aria-expanded="false">
                             카트 <span class="badge bg-primary" id="cart-count">0</span>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="cartDropdown" id="cart-dropdown-menu">
-                            <li><span class="dropdown-item">장바구니를 불러오는 중...</span></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="cartDropdown" id="cart-dropdown-menu"
+                            style="min-width: 300px; max-height: 400px; overflow-y: auto;">
+                            <li><span class="dropdown-item text-center">장바구니를 불러오는 중...</span></li>
                         </ul>
                     </li>
                 </ul>
@@ -85,12 +85,203 @@
 
 
                 <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <input class="form-control me-2 rounded-pill" type="search" placeholder="검색어를 입력하세요" aria-label="Search">
+                    <button class="btn btn-primary rounded-pill" style="width: 80px; white-space: nowrap;" type="submit">검색</button>
                 </form>
             </div>
         </div>
     </nav>
+    <!-- 고정 네비게이션바를 위한 여백 -->
+    <div style="margin-top: 76px;"></div>
 </div>
+
+<!-- 스크립트 추가 -->
+<script th:inline="javascript">
+    const isLoggedIn = /*[[${session.member != null}]]*/ false;
+    console.log('Login status:', isLoggedIn); // 로그인 상태 확인
+    
+    function updateCartDropdown() {
+        console.log('Updating cart dropdown...'); // 함수 실행 확인
+        
+        fetch('/cart/items')
+            .then(response => {
+                console.log('Response status:', response.status); // 응답 상태 확인
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Cart data received:', data); // 받은 데이터 확인
+                
+                // 카트 개수 업데이트
+                const cartCountElement = document.getElementById('cart-count');
+                console.log('Cart count element:', cartCountElement); // 요소 존재 확인
+                if (cartCountElement) {
+                    cartCountElement.textContent = data.count;
+                }
+
+                // 드롭다운 메뉴 내용 업데이트
+                const dropdownMenu = document.getElementById('cart-dropdown-menu');
+                console.log('Dropdown menu element:', dropdownMenu); // 요소 존재 확인
+                
+                if (data.items && data.items.length > 0) {
+                    console.log('Building HTML for', data.items.length, 'items'); // 아이템 수 확인
+                    let html = '';
+                    data.items.forEach(item => {
+                        console.log('Processing item:', item); // 각 아이템 데이터 확인
+                        const imageUrl = item.product.imageUrl || 'https://placehold.co/50x50';
+                        
+                        html += `
+                        <li>
+                            <div class="dropdown-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="${imageUrl}" 
+                                         alt="상품 이미지" 
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-medium">${item.product.name}</div>
+                                        <div class="small text-muted">
+                                            ${item.quantity}개 / ${new Intl.NumberFormat('ko-KR').format(item.product.price * item.quantity)}원
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>`;
+                    });
+                    html += `
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-center" href="/cart">
+                                장바구니 보기 <span class="text-primary">(${data.count})</span>
+                            </a>
+                        </li>`;
+                    console.log('Generated HTML:', html); // 생성된 HTML 확인
+                    dropdownMenu.innerHTML = html;
+                } else {
+                    console.log('No items in cart'); // 빈 카트 확인
+                    dropdownMenu.innerHTML = '<li><span class="dropdown-item text-center">장바구니가 비어있습니다.</span></li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error in updateCartDropdown:', error); // 에러 상세 확인
+                const dropdownMenu = document.getElementById('cart-dropdown-menu');
+                if (dropdownMenu) {
+                    dropdownMenu.innerHTML = 
+                        '<li><span class="dropdown-item text-center text-danger">장바구니 정보를 불러오는데 실패했습니다.</span></li>';
+                }
+            });
+    }
+
+    // 페이지 로드 시 실행
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded event fired'); // 이벤트 발생 확인
+        if (isLoggedIn) {
+            console.log('User is logged in, initializing cart dropdown'); // 초기화 확인
+            updateCartDropdown();
+        } else {
+            console.log('User is not logged in'); // 비로그인 상태 확인
+        }
+    });
+
+    // 카트 업데이트 이벤트
+    window.addEventListener('cart:updated', function() {
+        console.log('cart:updated event received'); // 이벤트 수신 확인
+        if (isLoggedIn) {
+            updateCartDropdown();
+        }
+    });
+
+    document.getElementById('cartDropdown').addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (!isLoggedIn) {
+            alert('로그인이 필요합니다.');
+            return;
+        }
+
+        console.log('Fetching cart items...'); // 요청 시작 로그
+        fetch('/cart/items')
+            .then(response => {
+                console.log('Response status:', response.status); // 응답 상태 확인
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Cart data received:', data); // 받은 데이터 확인
+                const dropdownMenu = document.getElementById('cart-dropdown-menu');
+                const cartCount = document.getElementById('cart-count');
+                
+                // 카트 개수 업데이트
+                cartCount.textContent = data.count;
+
+                if (data.items && data.items.length > 0) {
+                    let html = '';
+                    data.items.forEach(item => {
+                        const imageUrl = item.product.imageUrl || 'https://placehold.co/50x50';
+                        html += `
+                        <li>
+                            <div class="dropdown-item">
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="${imageUrl}" 
+                                         alt="상품 이미지" 
+                                         style="width: 50px; height: 50px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-medium">${item.product.name}</div>
+                                        <div class="small text-muted">
+                                            ${item.quantity}개 / ${new Intl.NumberFormat('ko-KR').format(item.product.price * item.quantity)}원
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>`;
+                    });
+                    html += `
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-center" href="/cart">
+                                장바구니 보기 <span class="text-primary">(${data.count})</span>
+                            </a>
+                        </li>`;
+                    dropdownMenu.innerHTML = html;
+                } else {
+                    dropdownMenu.innerHTML = '<li><span class="dropdown-item text-center">장바구니가 비어있습니다.</span></li>';
+                }
+            })
+            .catch(error => {
+                console.error('Error in updateCartDropdown:', error); // 에러 상세 확인
+                document.getElementById('cart-dropdown-menu').innerHTML = 
+                    '<li><span class="dropdown-item text-center text-danger">장바구니 정보를 불러오는데 실패했습니다.</span></li>';
+            });
+    });
+</script>
+
+<style>
+    #cart-dropdown-menu {
+        min-width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    #cart-dropdown-menu .dropdown-item {
+        padding: 0.5rem 1rem;
+        white-space: normal;  /* 긴 상품명이 있을 경우를 위해 줄바꿈 허용 */
+    }
+
+    #cart-dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    #cart-dropdown-menu img {
+        border-radius: 4px;
+    }
+
+    .dropdown-menu-end {
+        right: 0;
+        left: auto;
+    }
+</style>
 </body>
 </html>

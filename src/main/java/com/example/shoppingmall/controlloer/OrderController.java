@@ -56,12 +56,17 @@ public class OrderController {
 
     @PostMapping("/{product_id}")
     public String orderProduct(@PathVariable Long product_id, Model model, HttpSession session,
-                               @RequestParam int quantity, @RequestParam Long coupon_id)
+                               @RequestParam int quantity, @RequestParam(required = false,defaultValue = "0") Long coupon_id)
     {
 
+        //상품id랑 수량 그리고 쿠폰 id
+        //
+        System.out.println("--------------------------");
+        System.out.println(coupon_id);
         Delivery delivery = new Delivery();
         OrderItem orderItem = new OrderItem();
         Order order = new Order();
+
         Product product = productService.findById(product_id);
         Optional<Coupon> cp = couponService.findById(coupon_id);
 
@@ -69,15 +74,19 @@ public class OrderController {
         orderItem.setQuantity(quantity);
         orderItem.setPrice(price);
 
+        //쿠폰 적용 전
         int totalPrice = price * quantity;
 
+        //쿠폰 있으면 적용
         if(cp.isPresent()) {
             Coupon coupon = cp.get();
             order.setCoupon(coupon);
             if(totalPrice > coupon.getMinOrderAmount()) {
 
+
                 double discountPer = ((double) coupon.getDiscount() / 100);
-                int result = (int)(totalPrice / discountPer);
+                //int result = (int)(totalPrice / discountPer);
+                int result = (int)(totalPrice * discountPer); // 할인 금액
 
                 if(result > coupon.getMaxOrderAmount()) {
                     result = coupon.getMaxOrderAmount();

@@ -1,15 +1,14 @@
 package com.example.shoppingmall.entitiy;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 @Entity
+@Getter
+@Setter  // @Data 제거
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class ProductImage extends BaseTimeEntity {
 
     @Id

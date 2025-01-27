@@ -106,25 +106,77 @@
 
           const coupon = /*[[${coupon}]]*/ null;
 
-          function applyCoupon(discountRate) {
-            const quantity = parseInt(document.getElementById('quantity').value);
-            console.log(discountRate);
-            const totalPrice = productPrice * quantity;
-            const discountedPrice = totalPrice * (1 - discountRate / 100);
+          function applyCoupon(selectElement) {
+            console.log(selectElement.value)
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            const discount = selectedOption.getAttribute('data-discount');
+            const maxAmount = selectedOption.getAttribute('data-maxOrderAmount');
+            const minAmount = selectedOption.getAttribute('data-minOrderAmount');
 
-            document.getElementById('coupon-total-price').textContent =
-                    `${Math.round(discountedPrice).toLocaleString()}원 (${discountRate}% 할인)`;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const totalPrice = productPrice * quantity;
+
+            //할인 금액
+            const salePrice = totalPrice * (discount / 100);
+
+            let discountedPrice = 0;
+
+            if (totalPrice < minAmount){
+              //적용이 불가하다고 알려줘야함 (최소 주문 금액이 얼마다)
+              alert('쿠폰 적용이 불가합니다.')
+              selectElement.value=0;
+              document.getElementById('coupon-total-price').textContent =""
+            }else{
+              if(salePrice > maxAmount){
+                //할인 후 금액
+                discountedPrice = totalPrice  - maxAmount;
+              }else{
+                discountedPrice = totalPrice * (1-discount/100);
+              }
+
+              if(selectElement.value!=0){
+                document.getElementById('coupon-total-price').textContent =
+                        `쿠폰 적용 가격: ${Math.round(discountedPrice).toLocaleString()}원 (${discount}% 할인)`;
+
+              }else{
+                document.getElementById('coupon-total-price').textContent =""
+              }
+            }
+
+
+
+
+
+
 
           }
         </script>
         <th:block th:if="${session.member}">
+<!--          <div class="mb-3">-->
+<!--            <label for="issued_coupon" class="form-label"> 쿠폰 </label>-->
+<!--            <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this.value)">-->
+<!--              <option selected value="0"> 쿠폰 미사용 </option>-->
+<!--              <th:block th:each="cp : ${coupons}">-->
+<!--                <option th:value="${cp.coupon.getDiscount()}" th:text="${cp.coupon.getName()}"></option>-->
+<!--                <input type="hidden" id="coupon_id" name="coupon_id" th:value="${cp.coupon.getId()}"/>-->
+<!--              </th:block>-->
+<!--            </select>-->
+
+<!--          </div>-->
           <div class="mb-3">
             <label for="issued_coupon" class="form-label"> 쿠폰 </label>
-            <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this.value)">
+            <select class="form-control" id="issued_coupon" name="issued_coupon" onchange="applyCoupon(this)">
               <option selected value="0"> 쿠폰 미사용 </option>
               <th:block th:each="cp : ${coupons}">
-                <option th:value="${cp.coupon.getDiscount()}" th:text="${cp.coupon.getName()}"></option>
-                <input type="hidden" id="coupon_id" name="coupon_id" th:value="${cp.coupon.getId()}"/>
+                <option
+                        th:value="${cp.coupon.getId()}"
+                        th:text="${cp.coupon.getName()}"
+                        th:attr="
+                        data-discount=${cp.coupon.getDiscount()},
+                        data-minOrderAmount=${cp.coupon.getMinOrderAmount()},
+                        data-maxOrderAmount=${cp.coupon.getMaxOrderAmount()}"
+                >
+                  </option>
               </th:block>
             </select>
 
@@ -132,12 +184,12 @@
 
 
 
-          <div class="mb-3">
-            <label for="coupon_price" class="form-label"> 최종가격 </label>
-            <input type="text" class="form-control" id="coupon_price" name="coupon_price"  disabled>
+<!--          <div class="mb-3">-->
+<!--            <label for="coupon_price" class="form-label"> 최종가격 </label>-->
+<!--            <input type="text" class="form-control" id="coupon_price" name="coupon_price"  disabled>-->
 
-          </div>
-        </th:block>
+<!--          </div>-->
+<!--        </th:block>-->
 
 
         <div class="mb-3">
@@ -154,8 +206,8 @@
           총 가격: <span id="total-price" th:text="${product.price} + '원'"></span>
         </div>
         <th:block th:if="${session.member}">
-          <div class="mb-3">
-            쿠폰 적용 가격: <span id="coupon-total-price" th:text="${product.price} + '원'"></span>
+          <div class="mb-3" id="coupon-price">
+            <span id="coupon-total-price"></span>
           </div>
         </th:block>
         <div class="container">
@@ -169,7 +221,7 @@
           </div>
 
         </div>
-
+        </th:block>
       </div>
     </div>
   </form>

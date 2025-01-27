@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
 @Table(name = "orders")
 public class Order extends BaseTimeEntity {
 
