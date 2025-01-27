@@ -85,15 +85,37 @@
       margin-bottom: 20px;
     }
 
+    .buttons-container {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn-cart,
     .btn-purchase {
-      background: #007bff;
-      color: white;
+      flex: 1;
       padding: 15px 30px;
       border: none;
       border-radius: 5px;
-      font-size: 18px;
-      width: 100%;
-      transition: background-color 0.3s;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cart {
+      background: #fff;
+      color: #007bff;
+      border: 2px solid #007bff;
+    }
+
+    .btn-cart:hover {
+      background: #e7f1ff;
+    }
+
+    .btn-purchase {
+      background: #007bff;
+      color: white;
     }
 
     .btn-purchase:hover {
@@ -157,8 +179,10 @@
             </option>
           </select>
         </div>
-        <button type="button" class="btn-cart" onclick="addToCart()">장바구니 담기</button>
-        <button type="submit" class="btn-purchase">구매하기</button>
+        <div class="buttons-container">
+          <button type="button" class="btn-cart" onclick="addToCart()">장바구니 담기</button>
+          <button type="submit" class="btn-purchase">구매하기</button>
+        </div>
       </form>
     </div>
   </div>

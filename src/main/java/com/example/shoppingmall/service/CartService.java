@@ -69,4 +69,12 @@ public class CartService {
         cartItem.setSelected(selected);
         cartRepository.save(cartItem);
     }
+
+    public List<Cart> getSelectedCartItems(Long memberId) {
+        return cartRepository.findByMemberIdAndSelectedTrue(memberId);
+    }
+
+    public void removeCartItem(Long cartId) {
+        cartRepository.deleteById(cartId);
+    }
 }

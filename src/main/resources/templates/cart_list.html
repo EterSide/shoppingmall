@@ -186,7 +186,7 @@
                             <input type="checkbox" class="item-checkbox" 
                                    onchange="updateSelection(${item.id}, this.checked)"
                                    ${item.selected ? 'checked' : ''}>
-                            <img src="${item.product.imageUrl}" class="cart-item-image"
+                            <img src="${item.product.imageUrl}" class="cart-item-image" 
                                  alt="${item.product.name}">
                             <div class="cart-item-info">
                                 <div class="cart-item-title">${item.product.name}</div>
@@ -310,14 +310,25 @@
                 return;
             }
 
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/cart/order';
-            document.body.appendChild(form);
-            form.submit();
-
-
-            // 구매 페이지로 이동하는 로직 구현
+            const couponId = document.getElementById('issued_coupon').value;
+            
+            // POST 요청으로 선택된 상품들과 쿠폰 정보를 서버로 전송
+            fetch('/cart/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    couponId: couponId
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/order/complete'; // 주문 완료 페이지로 리다이렉트
+                } else {
+                    alert('주문 처리 중 오류가 발생했습니다.');
+                }
+            });
         }
 
         // 초기 로드

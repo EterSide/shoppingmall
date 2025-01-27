@@ -126,4 +126,9 @@ public class OrderController {
         return "redirect:/";
     }
 
+    @GetMapping("/complete")
+    public String orderComplete() {
+        return "order_complete";  // order_complete.html 템플릿을 반환
+    }
+
 }

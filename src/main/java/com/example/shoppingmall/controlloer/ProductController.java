@@ -120,4 +120,17 @@ public class ProductController {
 
     }
 
+    @GetMapping("/")
+    public String home(Model model) {
+        // 인기 상품 8개 조회
+        List<Product> popularProducts = productService.getPopularProducts(8);
+        // 신상품 8개 조회
+        List<Product> newProducts = productService.getNewProducts(8);
+
+        model.addAttribute("popularProducts", popularProducts);
+        model.addAttribute("newProducts", newProducts);
+
+        return "index";
+    }
+
 }

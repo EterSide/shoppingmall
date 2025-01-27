@@ -38,31 +38,36 @@
   <script>
     function checkCoupon(element) {
       const couponId = element.getAttribute('data-coupon-id');
-      console.log('쿠폰 ID:', couponId); // 쿠폰 ID 확인
-
-      fetch(`/issued_coupon/register/${couponId}`)
-              .then(response => {
-                console.log('서버 응답:', response); // 서버 응답 확인
-                return response.json();
-              })
-              .then(data => {
-                console.log('응답 데이터:', data); // 응답 데이터 확인
-                if (data.exists) {
-                  alert('쿠폰이 존재합니다!');
-                } else {
-                  alert('쿠폰이 존재하지 않습니다.\n쿠폰을 발급하겠습니다.');
-                }
-              })
-              .catch(error => {
-                console.error('Error:', error); // 에러 로그 출력
-                alert('쿠폰 조회 중 오류가 발생했습니다.');
-              });
+      
+      fetch(`/issued_coupon/register/${couponId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.exists) {
+          alert('이미 발급된 쿠폰입니다.');
+        } else {
+          alert('쿠폰이 발급되었습니다!');
+          // 쿠폰 발급 후 UI 업데이트
+          element.style.opacity = '0.5';
+          element.style.pointerEvents = 'none';
+          element.classList.add('disabled-coupon');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('쿠폰 발급 중 오류가 발생했습니다.');
+      });
     }
 
-    // 모든 쿠폰 항목에 이벤트 리스너 추가
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('.coupon-item').forEach(item => {
-        item.addEventListener('click', function () {
+    // 페이지 로드 시 쿠폰 클릭 이벤트 리스너 등록
+    document.addEventListener('DOMContentLoaded', function() {
+      const couponItems = document.querySelectorAll('.coupon-item:not(.disabled-coupon)');
+      couponItems.forEach(item => {
+        item.addEventListener('click', function() {
           checkCoupon(this);
         });
       });

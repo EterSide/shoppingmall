@@ -45,4 +45,14 @@ public class ProductService {
     public List<Product> findByCategory(Category category) {
         return productRepository.findByCategory(category);
     }
+
+    public List<Product> getPopularProducts(int limit) {
+        // 판매량이 많은 순으로 상품 조회
+        return productRepository.findTopNByOrderBySalesCountDesc(limit);
+    }
+
+    public List<Product> getNewProducts(int limit) {
+        // 최신 등록순으로 상품 조회
+        return productRepository.findTopNByOrderByCreatedAtDesc(limit);
+    }
 }

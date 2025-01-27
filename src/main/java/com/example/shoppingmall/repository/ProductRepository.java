@@ -3,6 +3,8 @@ package com.example.shoppingmall.repository;
 import com.example.shoppingmall.entitiy.Category;
 import com.example.shoppingmall.entitiy.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,4 +14,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     public List<Product> findByCategory(Category category);
 
+    @Query(value = "SELECT p FROM Product p ORDER BY p.saleCount DESC LIMIT :limit")
+    List<Product> findTopNByOrderBySalesCountDesc(@Param("limit") int limit);
+    
+    @Query(value = "SELECT p FROM Product p ORDER BY p.createdAt DESC LIMIT :limit")
+    List<Product> findTopNByOrderByCreatedAtDesc(@Param("limit") int limit);
 }

@@ -35,6 +35,8 @@ public class Product extends BaseTimeEntity{
 
     private int viewCount; // 조회수
 
+    private int discountRate;
+
     @Enumerated(EnumType.STRING)
     private ProductStatus status = ProductStatus.ACTIVE;
 
