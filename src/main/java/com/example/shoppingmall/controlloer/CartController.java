@@ -102,6 +102,7 @@ public class CartController {
         }
         
         List<Cart> cartItems = cartService.getCartItems(member.getId());
+        System.out.println("Found " + cartItems.size() + " cart items");
         
         // DTO로 변환하여 반환
         List<Map<String, Object>> items = cartItems.stream().map(cart -> {
@@ -115,11 +116,14 @@ public class CartController {
             product.put("price", cart.getProduct().getPrice());
             
             // 이미지 처리
-            if (!cart.getProduct().getImages().isEmpty()) {
+            if (cart.getProduct().getImages() != null && !cart.getProduct().getImages().isEmpty()) {
                 product.put("imageUrl", cart.getProduct().getImages().get(0).getImageUrl());
+            } else {
+                product.put("imageUrl", "https://placehold.co/50x50");
             }
             
             item.put("product", product);
+            System.out.println("Processed cart item: " + item);
             return item;
         }).collect(Collectors.toList());
         

@@ -73,11 +73,47 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="cartDropdown" role="button" 
                            data-bs-toggle="dropdown" aria-expanded="false">
-                            카트 <span class="badge bg-primary" id="cart-count">0</span>
+                            장바구니 <span class="badge bg-primary" id="cart-count" th:text="${cartItems.size()}">0</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="cartDropdown" id="cart-dropdown-menu"
                             style="min-width: 300px; max-height: 400px; overflow-y: auto;">
-                            <li><span class="dropdown-item text-center">장바구니를 불러오는 중...</span></li>
+                            <th:block th:if="${session.member != null}">
+                                <th:block th:if="${!cartItems.isEmpty()}">
+                                    <li th:each="item : ${cartItems}">
+                                        <div class="dropdown-item">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <img th:if="${!item.product.images.isEmpty()}" 
+                                                     th:src="${item.product.images[0].imageUrl}"
+                                                     alt="상품 이미지" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                <img th:unless="${!item.product.images.isEmpty()}" 
+                                                     src="https://placehold.co/50x50"
+                                                     alt="상품 이미지" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-medium" th:text="${item.product.name}">상품명</div>
+                                                    <div class="small text-muted">
+                                                        <span th:text="${item.quantity}">0</span>개 / 
+                                                        <span th:text="${#numbers.formatInteger(item.product.price * item.quantity, 0, 'COMMA')}">0</span>원
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item text-center" href="/cart">
+                                            장바구니 보기 <span class="text-primary" th:text="'(' + ${cartItems.size()} + ')'"></span>
+                                        </a>
+                                    </li>
+                                </th:block>
+                                <th:block th:if="${cartItems.isEmpty()}">
+                                    <li><span class="dropdown-item text-center">장바구니가 비어있습니다.</span></li>
+                                </th:block>
+                            </th:block>
+                            <th:block th:unless="${session.member != null}">
+                                <li><span class="dropdown-item text-center">로그인이 필요합니다.</span></li>
+                            </th:block>
                         </ul>
                     </li>
                 </ul>
@@ -97,130 +133,20 @@
 
 <!-- 스크립트 추가 -->
 <script th:inline="javascript">
-    const isLoggedIn = /*[[${session.member != null}]]*/ false;
-    console.log('Login status:', isLoggedIn); // 로그인 상태 확인
-    
-    function updateCartDropdown() {
-        console.log('Updating cart dropdown...'); // 함수 실행 확인
-        
-        fetch('/cart/items')
-            .then(response => {
-                console.log('Response status:', response.status); // 응답 상태 확인
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Cart data received:', data); // 받은 데이터 확인
-                
-                // 카트 개수 업데이트
-                const cartCountElement = document.getElementById('cart-count');
-                console.log('Cart count element:', cartCountElement); // 요소 존재 확인
-                if (cartCountElement) {
-                    cartCountElement.textContent = data.count;
-                }
-
-                // 드롭다운 메뉴 내용 업데이트
-                const dropdownMenu = document.getElementById('cart-dropdown-menu');
-                console.log('Dropdown menu element:', dropdownMenu); // 요소 존재 확인
-                
-                if (data.items && data.items.length > 0) {
-                    console.log('Building HTML for', data.items.length, 'items'); // 아이템 수 확인
-                    let html = '';
-                    data.items.forEach(item => {
-                        console.log('Processing item:', item); // 각 아이템 데이터 확인
-                        const imageUrl = item.product.imageUrl || 'https://placehold.co/50x50';
-                        
-                        html += `
-                        <li>
-                            <div class="dropdown-item">
-                                <div class="d-flex align-items-center gap-2">
-                                    <img src="${imageUrl}" 
-                                         alt="상품 이미지" 
-                                         style="width: 50px; height: 50px; object-fit: cover;">
-                                    <div class="flex-grow-1">
-                                        <div class="fw-medium">${item.product.name}</div>
-                                        <div class="small text-muted">
-                                            ${item.quantity}개 / ${new Intl.NumberFormat('ko-KR').format(item.product.price * item.quantity)}원
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>`;
-                    });
-                    html += `
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <a class="dropdown-item text-center" href="/cart">
-                                장바구니 보기 <span class="text-primary">(${data.count})</span>
-                            </a>
-                        </li>`;
-                    console.log('Generated HTML:', html); // 생성된 HTML 확인
-                    dropdownMenu.innerHTML = html;
-                } else {
-                    console.log('No items in cart'); // 빈 카트 확인
-                    dropdownMenu.innerHTML = '<li><span class="dropdown-item text-center">장바구니가 비어있습니다.</span></li>';
-                }
-            })
-            .catch(error => {
-                console.error('Error in updateCartDropdown:', error); // 에러 상세 확인
-                const dropdownMenu = document.getElementById('cart-dropdown-menu');
-                if (dropdownMenu) {
-                    dropdownMenu.innerHTML = 
-                        '<li><span class="dropdown-item text-center text-danger">장바구니 정보를 불러오는데 실패했습니다.</span></li>';
-                }
-            });
-    }
-
-    // 페이지 로드 시 실행
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('DOMContentLoaded event fired'); // 이벤트 발생 확인
-        if (isLoggedIn) {
-            console.log('User is logged in, initializing cart dropdown'); // 초기화 확인
-            updateCartDropdown();
-        } else {
-            console.log('User is not logged in'); // 비로그인 상태 확인
-        }
-    });
-
-    // 카트 업데이트 이벤트
+    // 장바구니 업데이트 이벤트 리스너
     window.addEventListener('cart:updated', function() {
-        console.log('cart:updated event received'); // 이벤트 수신 확인
-        if (isLoggedIn) {
-            updateCartDropdown();
-        }
-    });
-
-    document.getElementById('cartDropdown').addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        if (!isLoggedIn) {
-            alert('로그인이 필요합니다.');
-            return;
-        }
-
-        console.log('Fetching cart items...'); // 요청 시작 로그
         fetch('/cart/items')
-            .then(response => {
-                console.log('Response status:', response.status); // 응답 상태 확인
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Cart data received:', data); // 받은 데이터 확인
-                const dropdownMenu = document.getElementById('cart-dropdown-menu');
                 const cartCount = document.getElementById('cart-count');
+                const dropdownMenu = document.getElementById('cart-dropdown-menu');
                 
-                // 카트 개수 업데이트
                 cartCount.textContent = data.count;
-
+                
                 if (data.items && data.items.length > 0) {
                     let html = '';
                     data.items.forEach(item => {
-                        const imageUrl = item.product.imageUrl || 'https://placehold.co/50x50';
+                        const imageUrl = item.product?.imageUrl || 'https://placehold.co/50x50';
                         html += `
                         <li>
                             <div class="dropdown-item">
@@ -229,9 +155,9 @@
                                          alt="상품 이미지" 
                                          style="width: 50px; height: 50px; object-fit: cover;">
                                     <div class="flex-grow-1">
-                                        <div class="fw-medium">${item.product.name}</div>
+                                        <div class="fw-medium">${item.product?.name}</div>
                                         <div class="small text-muted">
-                                            ${item.quantity}개 / ${new Intl.NumberFormat('ko-KR').format(item.product.price * item.quantity)}원
+                                            ${item.quantity}개 / ${new Intl.NumberFormat('ko-KR').format(item.product?.price * item.quantity)}원
                                         </div>
                                     </div>
                                 </div>
@@ -250,11 +176,7 @@
                     dropdownMenu.innerHTML = '<li><span class="dropdown-item text-center">장바구니가 비어있습니다.</span></li>';
                 }
             })
-            .catch(error => {
-                console.error('Error in updateCartDropdown:', error); // 에러 상세 확인
-                document.getElementById('cart-dropdown-menu').innerHTML = 
-                    '<li><span class="dropdown-item text-center text-danger">장바구니 정보를 불러오는데 실패했습니다.</span></li>';
-            });
+            .catch(error => console.error('Error updating cart:', error));
     });
 </script>
 
@@ -267,7 +189,7 @@
 
     #cart-dropdown-menu .dropdown-item {
         padding: 0.5rem 1rem;
-        white-space: normal;  /* 긴 상품명이 있을 경우를 위해 줄바꿈 허용 */
+        white-space: normal;
     }
 
     #cart-dropdown-menu .dropdown-item:hover {
