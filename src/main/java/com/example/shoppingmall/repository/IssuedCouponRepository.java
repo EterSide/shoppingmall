@@ -16,7 +16,7 @@ public interface IssuedCouponRepository extends JpaRepository<IssuedCoupon, Long
 
     List<IssuedCoupon> findByMemberIdAndCouponId(Long id, Long couponId);
 
-    //List<IssuedCoupon> findByMemberIdAndUsed(Long id, Boolean used);
+    List<IssuedCoupon> findByIdAndCouponIdAndIsUsed(Long id, Long couponId, Boolean isUsed);
 
     //Long member(Member member);
 }

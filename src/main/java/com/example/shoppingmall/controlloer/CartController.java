@@ -1,6 +1,7 @@
 package com.example.shoppingmall.controlloer;
 
 import com.example.shoppingmall.entitiy.IssuedCoupon;
+import com.example.shoppingmall.entitiy.Product;
 import com.example.shoppingmall.service.CartService;
 import com.example.shoppingmall.service.IssuedCouponService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -102,13 +104,13 @@ public class CartController {
         }
         
         List<Cart> cartItems = cartService.getCartItems(member.getId());
-        System.out.println("Found " + cartItems.size() + " cart items");
         
         // DTO로 변환하여 반환
         List<Map<String, Object>> items = cartItems.stream().map(cart -> {
             Map<String, Object> item = new HashMap<>();
             item.put("id", cart.getId());
             item.put("quantity", cart.getQuantity());
+            item.put("selected", cart.isSelected());
             
             Map<String, Object> product = new HashMap<>();
             product.put("id", cart.getProduct().getId());
@@ -123,7 +125,6 @@ public class CartController {
             }
             
             item.put("product", product);
-            System.out.println("Processed cart item: " + item);
             return item;
         }).collect(Collectors.toList());
         
@@ -132,6 +133,23 @@ public class CartController {
         response.put("count", items.size());
         
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/order")
+    public String orderCart(HttpSession session, Model model) {
+
+        Member member = (Member) session.getAttribute("member");
+        List<Cart> cartItems = cartService.getCartItems(member.getId());
+        List<Product> products = new ArrayList<>();
+
+        for(Cart cart : cartItems) {
+            products.add(cart.getProduct());
+        }
+
+        model.addAttribute("cartItems", cartItems);
+        model.addAttribute("products", products);
+
+        return "order_cart";
     }
 
 

@@ -4,6 +4,7 @@ package com.example.shoppingmall.controlloer;
 import com.example.shoppingmall.entitiy.Coupon;
 import com.example.shoppingmall.entitiy.IssuedCoupon;
 import com.example.shoppingmall.entitiy.Member;
+import com.example.shoppingmall.entitiy.dto.CouponDto;
 import com.example.shoppingmall.service.CouponService;
 import com.example.shoppingmall.service.IssuedCouponService;
 import jakarta.servlet.http.HttpSession;
@@ -14,10 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,24 +28,33 @@ public class IssuedCouponController {
     @GetMapping("/register")
     public String register(Model model, HttpSession session) {
 
-        Member member = (Member) session.getAttribute("member");
+        List<CouponDto> couponDtos = new ArrayList<>();
 
-        if(member != null) {
+        Member member = (Member) session.getAttribute("member");
+        List<Coupon> coupons = couponService.findAll();
+
+        if (member != null) {
             List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
             model.addAttribute("issuedCoupons", issuedCoupons);
+
+            for (Coupon coupon : coupons) {
+                boolean hasCoupon = false;
+                for(IssuedCoupon issuedCoupon : issuedCoupons) {
+                    if(coupon.getId().equals(issuedCoupon.getCoupon().getId())) {
+                        hasCoupon = true;
+                    }
+                }
+                    couponDtos.add(new CouponDto(coupon.getId(), coupon.getName(), coupon.getDescription(), coupon.getEndDate(), hasCoupon));
+            }
+
         }
-
-
-
-        List<Coupon> coupons = couponService.findAll();
-        model.addAttribute("coupons", coupons);
-
+        model.addAttribute("coupons", couponDtos);
         return "register_issued_coupon";
     }
 
     @GetMapping("/register/{coupon_id}")
     @ResponseBody
-    public ResponseEntity<Map<String, Boolean>> register(Model model, @PathVariable Long coupon_id, HttpSession session) {
+    public ResponseEntity<Map<String, Boolean>> register(@PathVariable Long coupon_id, HttpSession session) {
 
         Optional<Coupon> coupon = couponService.findById(coupon_id);
         Member member = (Member) session.getAttribute("member");

@@ -184,8 +184,9 @@
                     cartItemsContainer.innerHTML = data.items.map(item => `
                         <div class="cart-item" data-id="${item.id}">
                             <input type="checkbox" class="item-checkbox" 
-                                   onchange="updateSelection(${item.id}, this.checked)">
-                            <img src="${item.product.imageUrl}" class="cart-item-image" 
+                                   onchange="updateSelection(${item.id}, this.checked)"
+                                   ${item.selected ? 'checked' : ''}>
+                            <img src="${item.product.imageUrl}" class="cart-item-image"
                                  alt="${item.product.name}">
                             <div class="cart-item-info">
                                 <div class="cart-item-title">${item.product.name}</div>
@@ -308,6 +309,14 @@
                 alert('구매할 상품을 선택해주세요.');
                 return;
             }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/cart/order';
+            document.body.appendChild(form);
+            form.submit();
+
+
             // 구매 페이지로 이동하는 로직 구현
         }
 

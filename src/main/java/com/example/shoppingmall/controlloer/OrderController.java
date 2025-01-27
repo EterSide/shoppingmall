@@ -55,7 +55,7 @@ public class OrderController {
     }
 
     @PostMapping("/{product_id}")
-    public String orderProduct(@PathVariable Long product_id, Model model, HttpSession session,
+    public String orderProduct(@PathVariable Long product_id, HttpSession session,
                                @RequestParam int quantity, @RequestParam(required = false,defaultValue = "0") Long coupon_id)
     {
 
@@ -82,7 +82,6 @@ public class OrderController {
             Coupon coupon = cp.get();
             order.setCoupon(coupon);
             if(totalPrice > coupon.getMinOrderAmount()) {
-
 
                 double discountPer = ((double) coupon.getDiscount() / 100);
                 //int result = (int)(totalPrice / discountPer);
@@ -111,6 +110,9 @@ public class OrderController {
         if(member != null) {
 
             order.setMember(member);
+            product.setStock(product.getStock() - quantity);
+            product.setSaleCount(product.getSaleCount() + quantity);
+            productService.update(product);
             orderService.save(order);
             delivery.setAddress(member.getAddress());
             delivery.setOrder(order);

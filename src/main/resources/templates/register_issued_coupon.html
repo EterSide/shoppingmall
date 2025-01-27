@@ -74,12 +74,15 @@
   <div class="center-container">
     <div class="form-container">
       <h2 class="text-center">쿠폰 등록</h2>
-      <th:block th:each="coupon : ${coupons}" th:if="${coupon.status.toString().equals('ACTIVE')}">
-        <div class="mb-3 coupon-item" th:data-coupon-id="${coupon.id}">
+      <th:block th:each="coupon : ${coupons}">
+        <div class="mb-3 coupon-item"
+             th:data-coupon-id="${coupon.coupon_id}"
+             th:classappend="${coupon.has_coupon ? 'disabled-coupon' : ''}"
+             th:style="${coupon.has_coupon ? 'opacity: 0.5; pointer-events: none;' : ''}">
           <div class="card border-success mb-3" style="max-width: 18rem;">
             <div class="card-header bg-transparent border-success">Header</div>
             <div class="card-body text-success">
-              <h5 class="card-title" th:text="${coupon.name}"></h5>
+              <h5 class="card-title" th:text="${coupon.coupon_name}"></h5>
               <p class="card-text" th:text="${coupon.description}"></p>
             </div>
             <div class="card-footer bg-transparent border-success" th:text="${coupon.endDate} + '일까지 사용가능'"></div>
@@ -91,6 +94,3 @@
 </div>
 </body>
 </html>
-
-
-
