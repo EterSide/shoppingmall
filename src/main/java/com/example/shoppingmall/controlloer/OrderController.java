@@ -1,6 +1,8 @@
 package com.example.shoppingmall.controlloer;
 
 import com.example.shoppingmall.entitiy.*;
+import com.example.shoppingmall.entitiy.dto.OrderDetailDto;
+import com.example.shoppingmall.entitiy.dto.OrderHistoryDto;
 import com.example.shoppingmall.service.*;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -129,6 +131,100 @@ public class OrderController {
     @GetMapping("/complete")
     public String orderComplete() {
         return "order_complete";  // order_complete.html 템플릿을 반환
+    }
+
+    @GetMapping("/list")
+    public String orderList(HttpSession session,Model model) {
+        Member member = (Member) session.getAttribute("member");
+        List<Order> orderLists = orderService.findByMemberId(member.getId());
+        if (orderLists.isEmpty()) {
+            // 주문 항목이 없을 경우 처리
+            model.addAttribute("errorMessage", "주문 항목이 없습니다.");
+            return "error_page"; // 에러 페이지로 리다이렉트
+        }
+
+        List<OrderHistoryDto> allOrderHistory = new ArrayList<>();
+
+        for(Order orderList : orderLists){
+            List<OrderItem> orderItems = orderItemService.findByOrderId(orderList.getId());
+            Delivery delivery = deliveryService.findByOrderId(orderList.getId());
+            int itemCnt = orderItems.size();
+            String firstItemName = orderItems.get(0).getProduct().getName();
+            System.out.println(delivery.getStatus().toString());
+
+            allOrderHistory.add(
+                    new OrderHistoryDto(
+                            orderList.getId(),
+                            firstItemName+" 외 "+ (itemCnt-1) +"건" ,
+                            orderList.getOrderNumber(),
+                            delivery.getStatus().toString())
+            );
+
+        }
+
+        model.addAttribute("orderLists", allOrderHistory);
+
+
+        return "order_list";
+    }
+
+    @GetMapping("/detail/{order_id}")
+    public String orderDetail(HttpSession session,Model model, @PathVariable Long order_id) {
+
+        List<OrderItem> orderItems = orderItemService.findByOrderId(order_id);
+        Optional<Order> orderId = orderService.findById(order_id);
+
+
+        if (orderItems.isEmpty()) {
+            // 주문 항목이 없을 경우 처리
+            model.addAttribute("errorMessage", "주문 항목이 없습니다.");
+            return "error_page"; // 에러 페이지로 리다이렉트
+        }
+
+        List<Map<String, Object>> items = orderItems.stream().map(orderItem -> {
+            Map<String, Object> item = new HashMap<>();
+            item.put("id", orderItem.getId());
+            item.put("quantity", orderItem.getQuantity());
+
+            Map<String, Object> product = new HashMap<>();
+            product.put("id", orderItem.getProduct().getId());
+            product.put("name", orderItem.getProduct().getName());
+            product.put("price", orderItem.getProduct().getPrice());
+
+            Map<String, Object> order = new HashMap<>();
+            order.put("id", orderItem.getId());
+            order.put("total_amount", orderItem.getOrder().getTotalAmount());
+            order.put("coupon_id", orderItem.getOrder().getCoupon());
+
+            // 이미지 처리
+            if (orderItem.getProduct().getImages() != null && !orderItem.getProduct().getImages().isEmpty()) {
+                product.put("imageUrl", orderItem.getProduct().getImages().get(0).getImageUrl());
+            } else {
+                product.put("imageUrl", "https://placehold.co/50x50");
+            }
+
+            item.put("product", product);
+            return item;
+        }).collect(Collectors.toList());
+
+        int allPrice = 0;
+
+        Coupon coupon = new Coupon();
+
+        for(OrderItem orderItem : orderItems) {
+            coupon = orderItem.getOrder().getCoupon();
+            allPrice += orderItem.getPrice() * orderItem.getQuantity();
+        }
+
+        model.addAttribute("coupon", coupon);
+        model.addAttribute("allPrice", allPrice);
+        model.addAttribute("items", items);
+        model.addAttribute("count", items.size());
+
+        orderId.ifPresent(order -> model.addAttribute("finalPrice", order.getTotalAmount()));
+
+
+        return "order_detail";
     }
 
 }

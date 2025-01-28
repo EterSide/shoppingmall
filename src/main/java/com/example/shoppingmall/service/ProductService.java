@@ -55,4 +55,12 @@ public class ProductService {
         // 최신 등록순으로 상품 조회
         return productRepository.findTopNByOrderByCreatedAtDesc(limit);
     }
+
+    public List<Product> searchByName(String keyword) {
+        return productRepository.findByNameContainingIgnoreCase(keyword);
+    }
+
+    public List<Product> findTopProductsByCategory(Category category, int limit) {
+        return productRepository.findTopProductsByCategoryOrderBySaleCountDesc(category, limit);
+    }
 }

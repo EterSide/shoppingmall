@@ -1,11 +1,16 @@
 package com.example.shoppingmall.controlloer;
 
 import com.example.shoppingmall.entitiy.Category;
+import com.example.shoppingmall.entitiy.Member;
 import com.example.shoppingmall.entitiy.Product;
 import com.example.shoppingmall.entitiy.ProductImage;
 import com.example.shoppingmall.service.CategoryService;
 import com.example.shoppingmall.service.ProductImageService;
+import com.example.shoppingmall.service.ProductRecommendationListener;
 import com.example.shoppingmall.service.ProductService;
+import com.example.shoppingmall.service.ProductViewEventService;
+
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -32,6 +37,9 @@ public class ProductController {
     private final ProductImageService productImageService;
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final ProductViewEventService productViewEventService;
+    private final ProductRecommendationListener recommendationListener;
+
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -101,12 +109,21 @@ public class ProductController {
 
     }
 
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam String keyword, Model model) {
+        List<Product> searchResults = productService.searchByName(keyword);
+        model.addAttribute("products", searchResults);
+        return "product_list";
+    }
+
     @GetMapping("/{id}")
-    public String getProduct(Model model, @PathVariable Long id) {
+    public String getProduct(HttpSession session,Model model, @PathVariable Long id) {
 
         Product product = productService.findById(id);
         List<ProductImage> images = productImageService.findByProductId(product.getId());
         model.addAttribute("images", images);
+
+
 
         String category = product.getCategory().getName();
         model.addAttribute("product", product);
@@ -115,22 +132,28 @@ public class ProductController {
         product.setViewCount(product.getViewCount() + 1);
 
         productService.update(product);
+        Member member = (Member) session.getAttribute("member");
+        productViewEventService.sendProductViewEvent(member.getId(), product);
 
         return "product_detail";
 
     }
 
-    @GetMapping("/")
-    public String home(Model model) {
-        // 인기 상품 8개 조회
-        List<Product> popularProducts = productService.getPopularProducts(8);
-        // 신상품 8개 조회
-        List<Product> newProducts = productService.getNewProducts(8);
-
-        model.addAttribute("popularProducts", popularProducts);
-        model.addAttribute("newProducts", newProducts);
-
-        return "index";
-    }
+//    @GetMapping("/")
+//    public String home(Model model, HttpSession session) {
+//        // 기존 인기상품, 신상품 조회
+//        List<Product> popularProducts = productService.getPopularProducts(8);
+//        List<Product> newProducts = productService.getNewProducts(8);
+//
+//        // 사용자별 추천상품 조회
+//        String userId = session.getId();
+//        List<Product> recommendedProducts = recommendationListener.getRecommendationsForUser(userId);
+//
+//        model.addAttribute("popularProducts", popularProducts);
+//        model.addAttribute("newProducts", newProducts);
+//        model.addAttribute("recommendedProducts", recommendedProducts);
+//
+//        return "index";
+//    }
 
 }

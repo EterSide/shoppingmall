@@ -5,6 +5,8 @@ import com.example.shoppingmall.repository.OrderItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class OrderItemService {
@@ -13,6 +15,10 @@ public class OrderItemService {
 
     public OrderItem save(OrderItem orderItem) {
         return orderItemRepository.save(orderItem);
+    }
+
+    public List<OrderItem> findByOrderId(Long orderId) {
+        return orderItemRepository.findByOrderId(orderId);
     }
 
 }

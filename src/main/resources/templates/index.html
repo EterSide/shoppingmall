@@ -148,7 +148,7 @@
                             <div class="d-flex align-items-center">
                                 <span th:if="${product.discountRate > 0}" 
                                       class="original-price" 
-                                      th:text="${#numbers.formatInteger(product.price * 100 / (100 - product.discountRate), 0, 'COMMA') + '원'}">
+                                      th:text="${#numbers.formatInteger(product.price / (1 - product.discountRate / 100), 0, 'COMMA') + '원'}">
                                 </span>
                                 <p class="product-price mb-0" 
                                    th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">
@@ -193,7 +193,51 @@
                             <div class="d-flex align-items-center">
                                 <span th:if="${product.discountRate > 0}" 
                                       class="original-price" 
-                                      th:text="${#numbers.formatInteger(product.price * 100 / (100 - product.discountRate), 0, 'COMMA') + '원'}">
+                                      th:text="${#numbers.formatInteger(product.price / (1 - product.discountRate / 100), 0, 'COMMA') + '원'}">
+                                </span>
+                                <p class="product-price mb-0" 
+                                   th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">
+                                   가격
+                                </p>
+                            </div>
+                            <small class="text-muted">
+                                판매 <span th:text="${product.saleCount}">0</span>
+                                조회 <span th:text="${product.viewCount}">0</span>
+                            </small>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 추천 상품 섹션 -->
+    <section class="container mb-5">
+        <div class="section-title">
+            <h2 class="h4 mb-0">추천 상품</h2>
+        </div>
+        <div class="row row-cols-2 row-cols-md-4 g-4">
+            <div class="col" th:each="product : ${recommendedProducts}">
+                <a th:href="@{/product/{id}(id=${product.id})}" class="text-decoration-none">
+                    <div class="card product-card shadow-sm">
+                        <div th:if="${product.discountRate > 0}" 
+                            class="discount-badge" 
+                            th:text="${product.discountRate + '%'}">
+                        </div>
+                        <img th:if="${!product.images.isEmpty()}"
+                             th:src="${product.images[0].imageUrl}"
+                             class="card-img-top product-image"
+                             alt="상품 이미지">
+                        <img th:unless="${!product.images.isEmpty()}" 
+                             src="https://placehold.co/300x200"
+                             class="card-img-top product-image" 
+                             alt="상품 이미지">
+                        <div class="card-body">
+                            <h5 class="product-title text-dark" th:text="${product.name}">상품명</h5>
+                            <div class="d-flex align-items-center">
+                                <span th:if="${product.discountRate > 0}" 
+                                      class="original-price" 
+                                      th:text="${#numbers.formatInteger(product.price / (1 - product.discountRate / 100), 0, 'COMMA') + '원'}">
                                 </span>
                                 <p class="product-price mb-0" 
                                    th:text="${#numbers.formatInteger(product.price, 0, 'COMMA') + '원'}">

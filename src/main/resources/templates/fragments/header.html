@@ -58,6 +58,7 @@
                             <th:block th:if="${session.member.getRole().toString().equals('USER')}">
                                 <li><a class="dropdown-item" href="/issued_coupon/register"> 쿠폰 등록 </a></li>
                                 <li><a class="dropdown-item" href="/issued_coupon/list"> 쿠폰 리스트 </a></li>
+                                <li><a class="dropdown-item" href="/order/list"> 주문 내역 </a></li>
                             </th:block>
                             <li><a class="dropdown-item" href="#">Another action</a></li>
                             <li><hr class="dropdown-divider"></li>
@@ -120,9 +121,13 @@
 
 
 
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2 rounded-pill" type="search" placeholder="검색어를 입력하세요" aria-label="Search">
-                    <button class="btn btn-primary rounded-pill" style="width: 80px; white-space: nowrap;" type="submit">검색</button>
+                <form class="d-flex" role="search" action="/product/search" method="GET">
+                    <input class="form-control me-2 rounded-pill" type="search" 
+                           name="keyword" placeholder="상품명을 입력하세요"
+                           aria-label="Search">
+                    <button class="btn btn-primary rounded-pill" 
+                            style="width: 80px; white-space: nowrap;" 
+                            type="submit">검색</button>
                 </form>
             </div>
         </div>

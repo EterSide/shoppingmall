@@ -15,4 +15,8 @@ public class DeliveryService {
         return deliveryRepository.save(delivery);
     }
 
+    public Delivery findByOrderId(long orderId) {
+        return deliveryRepository.findByOrderId(orderId);
+    }
+
 }

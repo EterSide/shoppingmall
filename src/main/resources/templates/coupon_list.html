@@ -20,6 +20,18 @@
             background-color: #ffffff; /* 배경색 */
         }
     </style>
+    <script>
+        function confirmDelete(url) {
+            // confirm()으로 확인/취소 창 띄우기
+            if (confirm("정말 삭제하시겠습니까?")) {
+                // "예"를 선택한 경우, 해당 URL로 이동
+                window.location.href = url;
+            } else {
+                // "아니오"를 선택한 경우, 아무 작업도 하지 않음
+                console.log("삭제가 취소되었습니다.");
+            }
+        }
+    </script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -49,6 +61,8 @@
                     <td th:text="${coupon.quantity}"></td>
                     <td th:text="${coupon.startDate}"></td>
                     <td th:text="${coupon.endDate}"></td>
+                    <td> <a class="btn btn-primary rounded-pill" th:onclick="|location.href='@{/coupon/update/{id}(id=${coupon.id})}'|"> 수정 </a> </td>
+                    <td> <a class="btn btn-primary rounded-pill" th:onclick="'confirmDelete(\'' + @{/coupon/delete/{id}(id=${coupon.id})} + '\');'"> 삭제 </a> </td>
                 </tr>
                 </tbody>
             </table>

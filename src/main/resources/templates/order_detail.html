@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+    <title>주문 상세</title>
+    <th:block layout:fragment="css">
+        <style>
+            .cart-container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 0 20px;
+            }
+
+            .cart-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #eee;
+            }
+
+            .cart-item {
+                display: flex;
+                align-items: center;
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+                gap: 20px;
+            }
+
+            .cart-item-image {
+                width: 100px;
+                height: 100px;
+                object-fit: cover;
+                border-radius: 8px;
+            }
+
+            .cart-item-info {
+                flex: 1;
+            }
+
+            .cart-item-title {
+                font-size: 18px;
+                font-weight: bold;
+                margin-bottom: 8px;
+            }
+
+            .cart-item-price {
+                color: #e44d26;
+                font-weight: bold;
+            }
+
+            .quantity-controls {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .quantity-input {
+                width: 60px;
+                text-align: center;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+
+            .cart-summary {
+                margin-top: 30px;
+                padding: 20px;
+                background: #f8f9fa;
+                border-radius: 8px;
+            }
+
+            .coupon-section {
+                margin: 20px 0;
+                padding: 20px;
+                background: #fff;
+                border-radius: 8px;
+                border: 1px solid #e0e0e0;
+            }
+
+            .coupon-badge {
+                display: inline-block;
+                padding: 8px 15px;
+                background: #e8f4ff;
+                border: 1px solid #b3d7ff;
+                color: #0056b3;
+                border-radius: 20px;
+                font-size: 0.9em;
+                font-weight: 500;
+            }
+
+            .no-coupon {
+                color: #6c757d;
+                font-style: italic;
+            }
+
+            .total-price {
+                margin: 20px 0;
+                padding: 20px;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .price-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin: 10px 0;
+                padding: 5px 0;
+            }
+
+            .price-label {
+                color: #666;
+                font-size: 1em;
+            }
+
+            .price-value {
+                font-size: 1.1em;
+                font-weight: 500;
+            }
+
+            .final-price {
+                border-top: 2px solid #eee;
+                margin-top: 15px;
+                padding-top: 15px;
+            }
+
+            .final-price .price-label {
+                font-size: 1.1em;
+                color: #333;
+                font-weight: 600;
+            }
+
+            .final-price .price-value {
+                color: #e44d26;
+                font-size: 1.3em;
+                font-weight: 700;
+            }
+
+            .discount-price {
+                color: #28a745;
+            }
+
+            .checkout-btn {
+                width: 100%;
+                padding: 15px;
+                background: #007bff;
+                color: white;
+                border: none;
+                border-radius: 8px;
+                font-size: 18px;
+                margin-top: 20px;
+                cursor: pointer;
+            }
+
+            .checkout-btn:hover {
+                background: #0056b3;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h2>주문 상세</h2>
+            </div>
+            
+            <div id="cart-items">
+                <th:block th:each="item : ${items}">
+                    <div class="cart-item" th:data-id="${item.id}">
+                        <img th:src="${item.product.imageUrl}" class="cart-item-image"
+                             th:alt="${item.product.name}">
+                        <div class="cart-item-info">
+                            <div class="cart-item-title" th:text="${item.product.name}"></div>
+                            <div class="cart-item-price" th:text="${item.product.price}"></div>
+                            <div class="quantity-controls">
+                                <label>
+                                    <input type="number" class="quantity-input" th:value="${item.quantity}" min="1" disabled>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+
+            <div class="cart-summary">
+                <div class="coupon-section">
+                    <h3>쿠폰 정보</h3>
+                    <div th:if="${coupon != null}">
+                        <span class="coupon-badge" th:text="${coupon.name}"></span>
+                    </div>
+                    <div th:if="${coupon == null}" class="no-coupon">
+                        적용된 쿠폰이 없습니다
+                    </div>
+                </div>
+
+                <div class="total-price">
+                    <div class="price-row">
+                        <span class="price-label">상품 금액</span>
+                        <span class="price-value" id="original-price" 
+                              th:text="${#numbers.formatDecimal(allPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
+                    </div>
+                    
+                    <div class="price-row" th:if="${coupon != null}">
+                        <span class="price-label">할인 금액</span>
+                        <span class="price-value discount-price" 
+                              th:text="'-' + ${#numbers.formatDecimal(allPrice - finalPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
+                    </div>
+
+                    <div class="price-row final-price">
+                        <span class="price-label">최종 결제 금액</span>
+                        <span class="price-value" 
+                              th:text="${#numbers.formatDecimal(finalPrice, 0, 'COMMA', 0, 'POINT')} + '원'">0원</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            // 필요한 자바스크립트 코드를 여기에 추가
+        </script>
+    </th:block>
+</body>
+</html>
