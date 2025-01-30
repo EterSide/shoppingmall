@@ -27,10 +27,20 @@ public class CouponIssueService {
 
     private static final String COUPON_QUANTITY_PREFIX = "coupon:quantity:";
     private static final String COUPON_ISSUE_TOPIC = "coupon-issue";
+    private static final String COUPON_ISSUED_USER_PREFIX = "coupon:issued:";  // 추가
+
 
     public boolean issueCoupon(Long couponId, Long memberId) {
         String quantityKey = COUPON_QUANTITY_PREFIX + couponId;
+        String issuedKey = COUPON_ISSUED_USER_PREFIX + couponId + ":" + memberId;
         log.info("Attempting to issue coupon. Key: {}", quantityKey);
+
+        //redis 해당 사용자가 발급한 내역이 있는지 확인 false
+        Boolean isAlreadyIssued = redisCouponTemplate.hasKey(issuedKey);
+        if (Boolean.TRUE.equals(isAlreadyIssued)) {
+            log.warn("User {} already has coupon {}", memberId, couponId);
+            return false;
+        }
 
         // 현재 수량 확인
         String currentQuantity = redisCouponTemplate.opsForValue().get(quantityKey);
@@ -54,6 +64,11 @@ public class CouponIssueService {
             }
             return false;
         }
+
+        //redis에 쿠폰 발급 내역 저장 (userId,쿠폰id)
+        redisCouponTemplate.opsForValue().set(issuedKey, LocalDateTime.now().toString());
+        log.info("Saved coupon issue record in Redis for user {} and coupon {}", memberId, couponId);
+
 
         // Kafka로 쿠폰 발급 이벤트 발행
         CouponIssueEvent event = new CouponIssueEvent(couponId, memberId, LocalDateTime.now());

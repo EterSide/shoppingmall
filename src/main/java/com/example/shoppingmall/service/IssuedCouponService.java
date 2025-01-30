@@ -45,4 +45,5 @@ public class IssuedCouponService {
         return issuedCouponRepository.findByMemberIdAndIsUsed(member_id, isUsed);
     }
 
+
 }

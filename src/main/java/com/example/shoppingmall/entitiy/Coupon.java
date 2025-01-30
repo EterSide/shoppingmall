@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 
@@ -42,6 +43,9 @@ public class Coupon extends BaseTimeEntity {
 
     @Column(nullable = false)
     private int quantity; // 쿠폰 수량
+
+    @Column(nullable = false)
+    private boolean isSpecial=false;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "member_id")

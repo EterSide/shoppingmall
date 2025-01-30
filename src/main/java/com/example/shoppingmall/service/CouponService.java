@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,5 +55,13 @@ public class CouponService {
     public List<Coupon> findByStatus(CouponStatus status) {
         return couponRepository.findByStatus(status);
     }
+    public List<Coupon> findByStatusAndIsSpecial(CouponStatus status, Boolean isSpecial) {
+        return couponRepository.findByStatusAndIsSpecial(status,isSpecial);
+    }
+
+    public List<Coupon> findByStatusAndIsSpecialAndStartDateBefore(CouponStatus status, Boolean isSpecial) {
+        return couponRepository.findByStatusAndIsSpecialAndStartDateBefore(status,isSpecial, LocalDateTime.now());
+    }
+
 
 }

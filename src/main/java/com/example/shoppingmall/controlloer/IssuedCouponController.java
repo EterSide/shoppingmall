@@ -35,7 +35,8 @@ public class IssuedCouponController {
         List<CouponDto> couponDtos = new ArrayList<>();
 
         Member member = (Member) session.getAttribute("member");
-        List<Coupon> coupons = couponService.findByStatus(CouponStatus.ACTIVE);
+//        List<Coupon> coupons = couponService.findByStatus(CouponStatus.ACTIVE);
+        List<Coupon> coupons = couponService.findByStatusAndIsSpecialAndStartDateBefore(CouponStatus.ACTIVE, false);
 
         if (member != null) {
             List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
@@ -60,7 +61,7 @@ public class IssuedCouponController {
     public String registerSpecial(Model model, HttpSession session) {
         List<CouponDto> couponDtos = new ArrayList<>();
         Member member = (Member) session.getAttribute("member");
-        List<Coupon> coupons = couponService.findByStatus(CouponStatus.ACTIVE);
+        List<Coupon> coupons = couponService.findByStatusAndIsSpecialAndStartDateBefore(CouponStatus.ACTIVE,true);
 
         if (member != null) {
             List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());

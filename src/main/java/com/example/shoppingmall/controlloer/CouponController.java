@@ -101,6 +101,7 @@ public class CouponController {
     public String addRedisCoupon(Coupon coupon) {
 
         log.info("Creating coupon with quantity: {}", coupon.getQuantity());
+        coupon.setSpecial(true);
         Coupon createdCoupon = couponService.createCoupon(coupon);
         log.info("Coupon created with ID: {}", createdCoupon.getId());
 
