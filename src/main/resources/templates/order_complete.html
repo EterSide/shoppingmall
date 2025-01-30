@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+<head>
+    <title>주문 완료</title>
+    <style>
+        .complete-container {
+            text-align: center;
+            padding: 50px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .complete-message {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        .home-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="complete-container">
+            <div class="complete-message">
+                주문이 성공적으로 완료되었습니다.
+            </div>
+            <a href="/" class="home-button">홈으로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html> 

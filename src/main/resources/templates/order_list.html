@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}">
+
+<div layout:fragment="content">
+    <div class="container mt-5">
+        <div class="page-header">
+            <h2 class="mb-4 text-center fancy-title">주문 내역</h2>
+            <div class="header-decoration"></div>
+        </div>
+        
+        <!-- 주문 내역이 없을 경우 -->
+        <div th:if="${#lists.isEmpty(orderLists)}" class="text-center py-5 empty-state">
+            <div class="empty-state-content">
+                <i class="fas fa-shopping-bag fa-4x mb-4 text-primary animate-float"></i>
+                <p class="lead glowing-text">주문 내역이 없습니다.</p>
+                <a href="/" class="btn btn-gradient pulse-effect">
+                    <i class="fas fa-store me-2"></i>쇼핑하러 가기
+                </a>
+            </div>
+        </div>
+
+        <!-- 주문 내역이 있을 경우 -->
+        <div th:unless="${#lists.isEmpty(orderLists)}" class="row">
+            <div class="col-12">
+                <div th:each="order : ${orderLists}" class="card mb-4 order-card glass-effect" 
+                     th:onclick="'location.href=\'/order/detail/' + ${order.orderId} + '\''">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="card-title mb-3 order-title shimmer-effect" th:text="${order.orderName}"></h5>
+                                <p class="card-text mb-0 order-info">
+                                    <i class="fas fa-hashtag me-2 rotating-icon"></i>
+                                    <span class="order-number" th:text="${order.orderNumber}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <span class="badge status-badge"
+                                      th:class="${order.deliveryStatus == 'PREPARING' ? 'status-preparing' :
+                                                  order.deliveryStatus == 'COMPLETED' ? 'status-completed' : 'status-shipping'}"
+                                      th:text="${order.deliveryStatus == 'PREPARING' ? '배송준비중' :
+                                                order.deliveryStatus == 'COMPLETED' ? '배송완료' : '배송중'}">
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.page-header {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.header-decoration {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    border-radius: 2px;
+}
+
+.fancy-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    animation: titleGlow 2s ease-in-out infinite;
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.order-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.order-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.order-title {
+    font-weight: 700;
+    color: #2d3436;
+    font-size: 1.3rem;
+}
+
+.shimmer-effect {
+    background: linear-gradient(90deg, #2d3436 0%, #636e72 50%, #2d3436 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 3s linear infinite;
+}
+
+.order-info {
+    display: flex;
+    align-items: center;
+    color: #636e72;
+}
+
+.rotating-icon {
+    color: #FF6B6B;
+    animation: rotate 3s linear infinite;
+}
+
+.status-badge {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 30px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    animation: pulse 2s infinite;
+}
+
+.status-preparing {
+    background: linear-gradient(45deg, #FF6B6B, #FFE66D);
+    color: #fff;
+}
+
+.status-shipping {
+    background: linear-gradient(45deg, #4ECDC4, #45B7AF);
+    color: #fff;
+}
+
+.status-completed {
+    background: linear-gradient(45deg, #2ECC71, #27AE60);
+    color: #fff;
+}
+
+.empty-state {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 4rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state-content {
+    animation: fadeInUp 1s ease-out;
+}
+
+.btn-gradient {
+    background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+    border: none;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-gradient:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    color: white;
+}
+
+.pulse-effect {
+    animation: pulse 2s infinite;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+    color: #FF6B6B;
+}
+
+.glowing-text {
+    color: #2d3436;
+    text-shadow: 0 0 10px rgba(0,0,0,0.1);
+    font-weight: 500;
+}
+
+@keyframes titleGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+
+</html>
