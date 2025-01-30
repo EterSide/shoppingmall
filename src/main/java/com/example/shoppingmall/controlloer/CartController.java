@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class CartController {
         List<Cart> cartItems = cartService.getCartItems(member.getId());
         int totalPrice = cartService.calculateTotalPrice(cartItems);
 
-        List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
+        List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberAndIsUsed(member.getId(), false);
 
         model.addAttribute("coupons", issuedCoupons);
         model.addAttribute("cartItems", cartItems);
@@ -195,6 +196,9 @@ public class CartController {
             if (couponId != null && couponId > 0) {
                 Optional<Coupon> coupon = couponService.findById(couponId);
                 coupon.ifPresent(order::setCoupon);
+                IssuedCoupon memberAndCoupon = issuedCouponService.findMemberAndCoupon(member.getId(), couponId);
+                memberAndCoupon.setUsed(true);
+                memberAndCoupon.setUsedDate(LocalDateTime.now());
             }
 
             // 총 주문 금액 계산

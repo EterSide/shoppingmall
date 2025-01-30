@@ -1,7 +1,6 @@
 package com.example.shoppingmall.controlloer;
 
 import com.example.shoppingmall.entitiy.*;
-import com.example.shoppingmall.entitiy.dto.OrderDetailDto;
 import com.example.shoppingmall.entitiy.dto.OrderHistoryDto;
 import com.example.shoppingmall.service.*;
 import jakarta.servlet.http.HttpSession;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,7 +37,7 @@ public class OrderController {
 
         if(member != null) {
 
-            List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberId(member.getId());
+            List<IssuedCoupon> issuedCoupons = issuedCouponService.findByMemberAndIsUsed(member.getId(), false);
 
             model.addAttribute("coupons", issuedCoupons);
 
@@ -58,19 +58,19 @@ public class OrderController {
 
     @PostMapping("/{product_id}")
     public String orderProduct(@PathVariable Long product_id, HttpSession session,
-                               @RequestParam int quantity, @RequestParam(required = false,defaultValue = "0") Long coupon_id)
+                               @RequestParam int quantity, @RequestParam(required = false,defaultValue = "0") Long issued_coupon)
     {
 
         //상품id랑 수량 그리고 쿠폰 id
         //
         System.out.println("--------------------------");
-        System.out.println(coupon_id);
+        System.out.println(issued_coupon);
         Delivery delivery = new Delivery();
         OrderItem orderItem = new OrderItem();
         Order order = new Order();
 
         Product product = productService.findById(product_id);
-        Optional<Coupon> cp = couponService.findById(coupon_id);
+        Optional<Coupon> cp = couponService.findById(issued_coupon);
 
         int price = product.getPrice();
         orderItem.setQuantity(quantity);
@@ -79,11 +79,14 @@ public class OrderController {
         //쿠폰 적용 전
         int totalPrice = price * quantity;
 
+        Member member1 = (Member) session.getAttribute("member");
+
         //쿠폰 있으면 적용
         if(cp.isPresent()) {
             Coupon coupon = cp.get();
+            IssuedCoupon memberAndCoupon = issuedCouponService.findMemberAndCoupon(member1.getId(), issued_coupon);
             order.setCoupon(coupon);
-            if(totalPrice > coupon.getMinOrderAmount()) {
+            if(totalPrice >= coupon.getMinOrderAmount()) {
 
                 double discountPer = ((double) coupon.getDiscount() / 100);
                 //int result = (int)(totalPrice / discountPer);
@@ -96,6 +99,10 @@ public class OrderController {
                 totalPrice -= result;
 
             }
+            System.out.println("----------------------------적용");
+            memberAndCoupon.setUsed(true);
+            memberAndCoupon.setUsedDate(LocalDateTime.now());
+
         }
 
         order.setTotalAmount(totalPrice);

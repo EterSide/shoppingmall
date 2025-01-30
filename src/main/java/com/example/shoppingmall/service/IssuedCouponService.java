@@ -29,7 +29,7 @@ public class IssuedCouponService {
         return issuedCouponRepository.findByMemberId(id);
     }
 
-    public List<IssuedCoupon> findMemberAndCoupon(Long member_id, Long coupon_id) {
+    public IssuedCoupon findMemberAndCoupon(Long member_id, Long coupon_id) {
         return issuedCouponRepository.findByMemberIdAndCouponId(member_id, coupon_id);
     }
 
@@ -41,8 +41,8 @@ public class IssuedCouponService {
         return issuedCouponRepository.findById(id);
     }
 
-//    public List<IssuedCoupon> findByMemberIdAndUsed(Long member_id, boolean used) {
-//        return issuedCouponRepository.findByMemberIdAndUsed(member_id, used);
-//    }
+    public List<IssuedCoupon> findByMemberAndIsUsed(Long member_id, Boolean isUsed) {
+        return issuedCouponRepository.findByMemberIdAndIsUsed(member_id, isUsed);
+    }
 
 }

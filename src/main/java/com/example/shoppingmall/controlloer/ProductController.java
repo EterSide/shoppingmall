@@ -133,7 +133,11 @@ public class ProductController {
 
         productService.update(product);
         Member member = (Member) session.getAttribute("member");
-        productViewEventService.sendProductViewEvent(member.getId(), product);
+        if (member != null){
+            productViewEventService.sendProductViewEvent(member.getId(), product);
+
+        }
+
 
         return "product_detail";
 

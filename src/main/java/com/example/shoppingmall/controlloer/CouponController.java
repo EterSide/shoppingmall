@@ -6,13 +6,12 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +19,7 @@ import java.util.Optional;
 public class CouponController {
 
     private final CouponService couponService;
+    private static final Logger log = LoggerFactory.getLogger(CouponController.class);
 
     @GetMapping("/list")
     public String list(Model model, HttpSession session) {
@@ -86,23 +86,25 @@ public class CouponController {
         return "register_coupon";
     }
 
+    @GetMapping("/special/register")
+    public String addSpecialCoupon() {
+        return "register_special_coupon";
+    }
+
     @PostMapping("/register")
     public String addCoupon(Coupon coupon, Model model) {
-
-        Coupon cp = new Coupon();
-        cp.setName(coupon.getName());
-        cp.setDescription(coupon.getDescription());
-        cp.setDiscount(coupon.getDiscount());
-        cp.setMinOrderAmount(coupon.getMinOrderAmount());
-        cp.setMaxOrderAmount(coupon.getMaxOrderAmount());
-        cp.setQuantity(coupon.getQuantity());
-        cp.setStartDate(coupon.getStartDate());
-        cp.setEndDate(coupon.getEndDate());
-
-        couponService.save(cp);
+        couponService.save(coupon);
         return "redirect:/coupon/list";
     }
 
+    @PostMapping("/special/register")
+    public String addRedisCoupon(Coupon coupon) {
 
+        log.info("Creating coupon with quantity: {}", coupon.getQuantity());
+        Coupon createdCoupon = couponService.createCoupon(coupon);
+        log.info("Coupon created with ID: {}", createdCoupon.getId());
+
+        return "redirect:/coupon/list";
+    }
 
 }
