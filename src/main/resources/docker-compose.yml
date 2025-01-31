@@ -1,6 +1,13 @@
 version: '3.8'
 
 services:
+
+  app:
+    volumes:
+      - upload_data:/home/uploads
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
   mysql:
     image: mysql:8.0
     environment:
@@ -51,3 +58,7 @@ services:
 networks:
   mynetwork:
     driver: bridge
+
+volumes:
+  upload_data:
+    driver: local
