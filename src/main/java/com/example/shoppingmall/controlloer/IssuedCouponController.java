@@ -49,7 +49,7 @@ public class IssuedCouponController {
                         hasCoupon = true;
                     }
                 }
-                    couponDtos.add(new CouponDto(coupon.getId(), coupon.getName(), coupon.getDescription(), coupon.getEndDate(), hasCoupon));
+                    couponDtos.add(new CouponDto(coupon.getId(), coupon.getName(), coupon.getDescription(), coupon.getMinOrderAmount(), coupon.getEndDate(), hasCoupon));
             }
 
         }
@@ -74,8 +74,7 @@ public class IssuedCouponController {
                         hasCoupon = true;
                     }
                 }
-                couponDtos.add(new CouponDto(coupon.getId(), coupon.getName(),
-                        coupon.getDescription(), coupon.getEndDate(), hasCoupon));
+                couponDtos.add(new CouponDto(coupon.getId(), coupon.getName(), coupon.getDescription(), coupon.getMinOrderAmount(), coupon.getEndDate(), hasCoupon));
             }
         }
         model.addAttribute("coupons", couponDtos);

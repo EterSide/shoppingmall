@@ -4,41 +4,89 @@
       layout:decorate="~{layouts/default}" lang="en">
 <head>
   <style>
-    .center-container {
+    .coupon-tabs {
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh; /* 화면 높이를 꽉 채우도록 설정 */
+      border-bottom: 2px solid #f43142;
+      margin-bottom: 20px;
     }
 
-    .form-container {
-      width: 100%;
-      max-width: 400px; /* 폼의 최대 너비를 설정 */
+    .tab {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background-color: #f43142;
+      color: white;
+    }
+
+    .coupon-container {
+      max-width: 720px;
+      margin: 0 auto;
       padding: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
-      border-radius: 10px; /* 테두리 둥글게 */
-      background-color: #ffffff; /* 배경색 */
     }
 
-
-    .preview-container img {
-
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-
-      max-width: 100px;
-      max-height: 100px;
-      object-fit: cover;
+    .coupon-item {
       border: 1px solid #ddd;
-      border-radius: 5px;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .coupon-item:hover:not(.disabled-coupon) {
+      border-color: #f43142;
+      box-shadow: 0 2px 8px rgba(244, 49, 66, 0.1);
+    }
+
+    .coupon-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #f43142;
+    }
+
+    .coupon-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .coupon-condition {
+      color: #666;
+      font-size: 14px;
+      margin: 4px 0;
+    }
+
+    .coupon-period {
+      color: #999;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .disabled-coupon {
+      opacity: 0.5;
+      background-color: #f5f5f5;
+      cursor: not-allowed;
+    }
+
+    .coupon-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      background-color: #ff0000;
+      color: white;
+      margin-left: 8px;
     }
   </style>
   <script>
     function checkCoupon(element) {
       const couponId = element.getAttribute('data-coupon-id');
-      
+
       fetch(`/issued_coupon/register/${couponId}`, {
         method: 'GET',
         headers: {
@@ -51,10 +99,12 @@
           alert('이미 발급된 쿠폰입니다.');
         } else {
           alert('쿠폰이 발급되었습니다!');
-          // 쿠폰 발급 후 UI 업데이트
-          element.style.opacity = '0.5';
-          element.style.pointerEvents = 'none';
           element.classList.add('disabled-coupon');
+          element.onclick = null;
+          const status = document.createElement('span');
+          status.className = 'coupon-status';
+          status.textContent = '발급완료';
+          element.querySelector('.coupon-content').appendChild(status);
         }
       })
       .catch(error => {
@@ -76,24 +126,33 @@
 </head>
 <body>
 <div layout:fragment="content">
-  <div class="center-container">
-    <div class="form-container">
-      <h2 class="text-center">쿠폰 등록</h2>
-      <th:block th:each="coupon : ${coupons}">
-        <div class="mb-3 coupon-item"
-             th:data-coupon-id="${coupon.coupon_id}"
-             th:classappend="${coupon.has_coupon ? 'disabled-coupon' : ''}"
-             th:style="${coupon.has_coupon ? 'opacity: 0.5; pointer-events: none;' : ''}">
-          <div class="card border-success mb-3" style="max-width: 18rem;">
-            <div class="card-header bg-transparent border-success">Header</div>
-            <div class="card-body text-success">
-              <h5 class="card-title" th:text="${coupon.coupon_name}"></h5>
-              <p class="card-text" th:text="${coupon.description}"></p>
+  <div class="coupon-container">
+    <div class="coupon-tabs">
+      <div class="tab active">쿠폰</div>
+      <div class="tab">T 멤버십</div>
+    </div>
+
+    <div class="tab-content">
+      <div class="coupon-list">
+        <th:block th:each="coupon : ${coupons}">
+          <div class="coupon-item"
+               th:data-coupon-id="${coupon.coupon_id}"
+               th:classappend="${coupon.has_coupon ? 'disabled-coupon' : ''}"
+               >
+            <div class="coupon-content">
+              <span class="coupon-amount">5,000</span>
+              <span>원</span>
+              <h3 class="coupon-title" th:text="${coupon.coupon_name}"></h3>
+              <p class="coupon-condition" th:text="${coupon.description}"></p>
+              <p class="coupon-condition" th:text="${coupon.min_order} + '원 이상 구매 시'"></p>
+              <p class="coupon-period"
+                 th:text="${coupon.endDate} + '일까지 사용가능'">
+              </p>
+              <span th:if="${coupon.has_coupon}" class="coupon-status">발급완료</span>
             </div>
-            <div class="card-footer bg-transparent border-success" th:text="${coupon.endDate} + '일까지 사용가능'"></div>
           </div>
-        </div>
-      </th:block>
+        </th:block>
+      </div>
     </div>
   </div>
 </div>

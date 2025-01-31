@@ -14,6 +14,7 @@ public class CouponDto {
     private Long coupon_id;
     private String coupon_name;
     private String description;
+    private int min_order;
     private LocalDateTime endDate;
     private boolean has_coupon;
 
