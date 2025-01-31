@@ -13,7 +13,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public void save(Member member) {
+    public Member save(Member member) {
         Member mem = new Member();
         mem.setUserId(member.getUserId());
         mem.setPassword(member.getPassword());
@@ -21,7 +21,8 @@ public class MemberService {
         mem.setEmail(member.getEmail());
         mem.setPhone(member.getPhone());
         mem.setAddress(member.getAddress());
-        memberRepository.save(mem);
+        Member save = memberRepository.save(mem);
+        return save;
     }
 
     public Optional<Member> passwordCheck(String id, String password) {

@@ -2,6 +2,7 @@ package com.example.shoppingmall.service;
 
 import com.example.shoppingmall.entitiy.Category;
 import com.example.shoppingmall.entitiy.Product;
+import com.example.shoppingmall.entitiy.status.ProductStatus;
 import com.example.shoppingmall.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class ProductService {
     }
 
     public List<Product> findAll() {
-        return productRepository.findAll();
+        return productRepository.findAllByStatus(ProductStatus.ACTIVE);
     }
 
     public Product findById(Long id) {

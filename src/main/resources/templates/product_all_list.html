@@ -82,7 +82,7 @@
 
             <div class="row row-cols-3 row-cols-md-3 g-4">
                 <th:block th:each="product : ${products}">
-                    <div class="col" th:onclick="|location.href='@{/product/{id}(id=${product.id})}'|">
+                    <div class="col" th:onclick="|location.href='@{/product/admin/{id}(id=${product.id})}'|">
                             <div class="card">
                                 <img th:if="${product.images != null and product.images.size() > 0}"
                                      th:src="${product.images[0].imageUrl}"
@@ -90,7 +90,8 @@
                                 <!-- 이미지가 없으면 대체 이미지 표시 -->
                                 <img th:if="${product.images == null or product.images.size() == 0}"
                                      th:src="'https://dummyimage.com/600x400/dee2e6/6c757d.jpg'"
-                                     class="card-img-top" alt="No image available">                                <div class="card-body">
+                                     class="card-img-top" alt="No image available">
+                                <div class="card-body">
                                     <h5 class="card-title" th:text="${product.name}">Card title</h5>
                                     <p class="card-text" th:text="${product.description}"></p>
                                     <p class="card-text"><small class="text-body-secondary" th:text="${product.price}"></small></p>
@@ -99,7 +100,7 @@
                     </div>
                 </th:block>
             </div>
-
+            
         </div>
     </div>
 </div>

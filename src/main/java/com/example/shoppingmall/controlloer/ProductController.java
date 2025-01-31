@@ -13,6 +13,8 @@ import com.example.shoppingmall.service.ProductViewEventService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -143,21 +145,91 @@ public class ProductController {
 
     }
 
-//    @GetMapping("/")
-//    public String home(Model model, HttpSession session) {
-//        // 기존 인기상품, 신상품 조회
-//        List<Product> popularProducts = productService.getPopularProducts(8);
-//        List<Product> newProducts = productService.getNewProducts(8);
-//
-//        // 사용자별 추천상품 조회
-//        String userId = session.getId();
-//        List<Product> recommendedProducts = recommendationListener.getRecommendationsForUser(userId);
-//
-//        model.addAttribute("popularProducts", popularProducts);
-//        model.addAttribute("newProducts", newProducts);
-//        model.addAttribute("recommendedProducts", recommendedProducts);
-//
-//        return "index";
-//    }
+    @GetMapping("/list/all")
+    public String allProducts(Model model) {
+        List<Product> products = productService.findAll();
+        model.addAttribute("products", products);
+        return "product_all_list";
+    }
+
+    @GetMapping("/admin/{id}")
+    public String adminProducts(Model model, @PathVariable Long id, HttpSession session) {
+
+        Product product = productService.findById(id);
+        List<ProductImage> images = productImageService.findByProductId(product.getId());
+        model.addAttribute("images", images);
+
+        String category = product.getCategory().getName();
+        model.addAttribute("product", product);
+        model.addAttribute("category", category);
+
+        product.setViewCount(product.getViewCount() + 1);
+
+        productService.update(product);
+
+        return "product_admin";
+    }
+
+    @DeleteMapping("/image/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteImage(@PathVariable Long id) {
+        try {
+
+            Optional<ProductImage> byId = productImageService.findById(id);
+            ProductImage image = new ProductImage();
+            if (byId.isPresent()) {
+                image = byId.get();
+            }
+
+            // 실제 파일 삭제
+            String filePath = uploadDir + image.getImageUrl().substring(image.getImageUrl().lastIndexOf("/") + 1);
+            Files.deleteIfExists(Paths.get(filePath));
+            
+            // DB에서 이미지 정보 삭제
+            productImageService.deleteById(id);
+            
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 삭제 실패");
+        }
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateProduct(@PathVariable Long id, 
+                              Product product,
+                              @RequestParam("files") MultipartFile[] files) throws IOException {
+        Product existingProduct = productService.findById(id);
+        // 기존 제품 정보 업데이트
+        existingProduct.setName(product.getName());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setStock(product.getStock());
+        existingProduct.setDescription(product.getDescription());
+        existingProduct.setCategory(product.getCategory());
+        
+        // 새로운 이미지 추가
+        int displayOrder = productImageService.getMaxDisplayOrder(id) + 1;
+        for (MultipartFile file : files) {
+            if (!file.isEmpty()) {
+                // 기존의 파일 업로드 로직 사용
+                String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+                String fileNameWithoutExtension = StringUtils.stripFilenameExtension(originalFileName);
+                String fileExtension = StringUtils.getFilenameExtension(originalFileName);
+                String timestamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
+                String newFileName = fileNameWithoutExtension + "_" + timestamp + "." + fileExtension;
+                Path filePath = Paths.get(uploadDir + newFileName);
+                Files.copy(file.getInputStream(), filePath);
+                String fileUrl = "/uploads/" + newFileName;
+
+                ProductImage productImage = new ProductImage();
+                productImage.setProduct(existingProduct);
+                productImage.setDisplayOrder(displayOrder++);
+                productImage.setImageUrl(fileUrl);
+                productImageService.save(productImage);
+            }
+        }
+        
+        productService.update(existingProduct);
+        return "redirect:/product/admin/" + id;
+    }
 
 }

@@ -28,9 +28,8 @@ public class MemberController {
 
     @PostMapping("/signup")
     public String signUp(Member member, HttpSession session) {
-        System.out.println("asd");
-        memberService.save(member);
-        session.setAttribute("member", member);
+        Member savedMember = memberService.save(member);
+        session.setAttribute("member", savedMember);
         return "redirect:/";
     }
 

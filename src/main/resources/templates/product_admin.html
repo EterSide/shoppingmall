@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/default}" lang="en">
+<head>
+  <style>
+    .center-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh; /* 화면 높이를 꽉 채우도록 설정 */
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 400px; /* 폼의 최대 너비를 설정 */
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 약간의 그림자 효과 */
+      border-radius: 10px; /* 테두리 둥글게 */
+      background-color: #ffffff; /* 배경색 */
+    }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .preview-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+  </style>
+  <script>
+    // 기존 이미지 정보를 저장할 배열
+    let existingImages = [];
+
+    // 페이지 로드 시 기존 이미지 표시
+    window.onload = function() {
+      const previewContainer = document.getElementById("preview-container");
+      
+      // Thymeleaf로 전달된 이미지 데이터를 JavaScript 배열로 변환
+      existingImages = /*[[${images}]]*/ [];
+      
+      existingImages.forEach((image, index) => {
+        addImagePreview(image.imageUrl, image.id);
+      });
+    }
+
+    // 새로운 파일 선택 시 미리보기
+    function loadFiles(input) {
+      const files = input.files;
+      const previewContainer = document.getElementById("preview-container");
+
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          addImagePreview(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // 이미지 미리보기 추가 함수
+    function addImagePreview(imageUrl, imageId = null) {
+      const previewContainer = document.getElementById("preview-container");
+      
+      const imageItem = document.createElement("div");
+      imageItem.className = "image-item";
+      
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "delete-btn";
+      deleteBtn.innerHTML = "×";
+      deleteBtn.onclick = function() {
+        if (imageId) {
+          // 기존 이미지 삭제 처리
+          deleteImage(imageId);
+        }
+        imageItem.remove();
+      };
+      
+      imageItem.appendChild(img);
+      imageItem.appendChild(deleteBtn);
+      previewContainer.appendChild(imageItem);
+    }
+
+    // 이미지 삭제 처리
+    function deleteImage(imageId) {
+      fetch(`/product/image/delete/${imageId}`, {
+        method: 'DELETE',
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('이미지 삭제 실패');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('이미지 삭제 중 오류가 발생했습니다.');
+      });
+    }
+  </script>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="center-container">
+    <div class="form-container">
+      <h2 class="text-center">상품 수정</h2>
+      <form th:action="@{/product/update/{id}(id=${product.id})}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="name" class="form-label">상품 명</label>
+          <input type="text" class="form-control" id="name" name="name" th:value="${product.getName()}" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="price" class="form-label">가격</label>
+          <input type="number" class="form-control" id="price" name="price" th:value="${product.getPrice()}" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="stock" class="form-label">재고량</label>
+          <input type="number" class="form-control" id="stock" name="stock" th:value="${product.getStock()}" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="chooseFiles" class="form-label">이미지 업로드</label>
+          <input type="file" class="form-control" id="chooseFiles" name="files" accept="image/*" multiple onchange="loadFiles(this)">
+        </div>
+        <div class="preview-container" id="preview-container">
+          <!-- 기존 이미지들이 여기에 동적으로 추가됨 -->
+        </div>
+
+        <div class="mb-3">
+          <label for="category_id" class="form-label">카테고리</label>
+          <select class="form-control" id="category_id" name="category" required>
+            <option value="" disabled selected>카테고리를 선택하세요</option>
+            <th:block th:each="category : ${categories}">
+              <option th:value="${category.id}" th:text="${category.name}"></option>
+            </th:block>
+          </select>
+        </div>
+
+
+        <div class="mb-3">
+          <label for="description" class="form-label">상세설명</label>
+          <input type="text" class="form-control" id="description" name="description" th:value="${product.getDescription()}" required>
+        </div>
+        <div class="form-row d-flex align-items-center">
+          <div class="col">
+            <button type="button" class="btn btn-danger w-100" onclick="deleteProduct()">상품삭제</button>
+          </div>
+          <div class="col-auto px-2"></div>
+          <div class="col">
+            <button type="submit" class="btn btn-primary w-100">상품수정</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript">
+  // Thymeleaf 변수를 JavaScript로 전달
+  const images = /*[[${images}]]*/ [];
+  
+  // 페이지 로드 시 기존 이미지 표시
+  window.onload = function() {
+    images.forEach(image => {
+      addImagePreview(image.imageUrl, image.id);
+    });
+  }
+
+  // 상품 삭제 함수
+  function deleteProduct() {
+    if (confirm('정말로 이 상품을 삭제하시겠습니까?')) {
+      const productId = /*[[${product.id}]]*/ null;
+      window.location.href = `/product/delete/${productId}`;
+    }
+  }
+</script>
+</body>
+</html>
