@@ -27,7 +27,7 @@ class ShoppingmallApplicationTests {
 
 
 }
-
+//
 //@SpringBootTest
 //class CouponIssueServiceTest {
 //	@Autowired
