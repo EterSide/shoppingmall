@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "members")
 public class Member extends BaseTimeEntity {
-//testdd
+//testddd
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
